@@ -1,0 +1,7 @@
+{
+  "name": "SENG-513-PROJECT",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
