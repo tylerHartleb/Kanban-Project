@@ -1,3 +1,13 @@
+import { ICardData, IGroupData } from "../classes/KanbanClasses";
+
+export type IDraggableCard = {
+    cardData: ICardData,
+    index: number
+}
+
+export type IDroppableGroup = {
+    groupData: IGroupData,
+}
 
 export type KanbanItem = {
     id: string,

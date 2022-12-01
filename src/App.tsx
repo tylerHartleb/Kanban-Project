@@ -22,30 +22,28 @@ import '@ionic/react/css/display.css'; */
 /* Theme variables */
 import './theme/variables.scss';
 
-/* Custom Components */
-import KanbanBoard from './components/KanbanBoard';
-import { KanbanData, KanbanGroup } from './types/KanbanTypes';
+/* Custom Types */
+import { Cards, Card, Group, Members, IProject } from "./classes/KanbanClasses"
 
-const firstGroup: KanbanGroup = {
-    name: 'group1',
-    id: "group-1",
-    items: [
-        {id: 'item-1', content: '<Draggable 1 />'},
-        {id: 'item-2', content: '<Draggable 2 />'}
-    ]
-}
-  
-const kanbanData: KanbanData = {
-    boardName: 'boardOne',
-    groups: [firstGroup]
-}
+/* Custom Components */
+import ProjectBoard from './components/ProjectBoard';
+import { KanbanData, KanbanGroup } from './types/KanbanTypes';
+import { Project } from './classes/Project';
+
+const cards = new Cards([new Card("card1", "<Draggable 1 />"), new Card("card2", "<Draggable 2 />")])
+const group = new Group("group-1", "group1");
+group.cards = cards;
+
+const project = new Project("Test-Board");
+project.groups.push(group);
+
 
 setupIonicReact();
 
 const App: React.FC = () => (
     <IonApp>
         <div className="container">
-            <KanbanBoard {...kanbanData} />
+            <ProjectBoard title={project.title} groups={project.groups} members={project.members}  />
         </div>
     </IonApp>
 );
