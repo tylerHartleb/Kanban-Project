@@ -61,7 +61,9 @@ const LoginPage: React.FC = () => {
 
     }
 
-    catch(err){
+    catch(err:any){
+      
+      setErrMsg2(err.message);
 
     }
 

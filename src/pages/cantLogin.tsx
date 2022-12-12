@@ -58,7 +58,8 @@ const CantLogin: React.FC = () => {
 
     }
 
-    catch(err){
+    catch(err:any){
+      setErrMsg4(err.message);
 
     }
 
@@ -96,7 +97,9 @@ const CantLogin: React.FC = () => {
 
     }
 
-    catch (err){
+    catch (err:any){
+
+      setErrMsg3(err.message)
 
     }
 
