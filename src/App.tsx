@@ -1,6 +1,11 @@
 import {
-  IonApp,
-  setupIonicReact
+    IonApp,
+    setupIonicReact,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButtons,
+    IonBackButton
 } from '@ionic/react';
 
 /* Core CSS required for Ionic components to work properly */
@@ -30,7 +35,7 @@ import ProjectBoard from './components/ProjectBoard';
 import { KanbanData, KanbanGroup } from './types/KanbanTypes';
 import { Project } from './classes/Project';
 
-const cards = new Cards([new Card("card1", "<Draggable 1 />"), new Card("card2", "<Draggable 2 />")])
+const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
 const group = new Group("group-1", "group1");
 group.cards = cards;
 
@@ -42,6 +47,14 @@ setupIonicReact();
 
 const App: React.FC = () => (
     <IonApp>
+        {/* <IonHeader>
+                <IonToolbar>
+                    <IonTitle>{ project.title }</IonTitle>
+                    <IonButtons slot="start">
+                        <IonBackButton />
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader> */}
         <div className="container">
             <ProjectBoard title={project.title} groups={project.groups} members={project.members}  />
         </div>
