@@ -16,8 +16,6 @@ import {
   IonContent,
   IonHeader, 
   IonTitle,
-  IonToolbar,
-  IonButtons,
   IonBackButton
 } from "@ionic/react";
 import { addOutline, clipboardOutline, personOutline } from "ionicons/icons";
