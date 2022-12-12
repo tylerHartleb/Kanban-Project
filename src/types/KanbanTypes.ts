@@ -2,6 +2,7 @@ import { ICardData, IGroupData } from "../classes/KanbanClasses";
 
 export type IDraggableCard = {
     cardData: ICardData,
+    groupName: string,
     index: number
 }
 

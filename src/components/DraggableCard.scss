@@ -1,10 +1,94 @@
 // TODO: Style this
 
 .draggable-card {
-    color: black;
-    background-color: lightgreen;
-    border: 4px solid green;
-    border-radius: 5px;
     width: auto;
     padding: 0.5rem;
+}
+
+.card-modal__main {
+    .section-title {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        gap: 8px;
+
+        h5 {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.card-modal__content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card-modal__sidebar {
+    width: 192px;
+}
+
+ion-card {
+    &.task {
+        --background: #fff !important;
+        --color: #000 !important;
+
+        cursor: pointer;
+
+        &:hover {
+            --background: #f5f5f5f5 !important;
+
+            ion-button.edit-task {
+                visibility: visible;
+            }
+        }
+    }
+}
+
+ion-content {
+    &.card-modal {
+        --padding-start: 8px;
+        --padding-end: 8px;
+        --padding-top: 24px;
+        --padding-bottom: 24px;
+    }
+}
+
+ion-list {
+    &.buttons-list {
+        display: flex;
+        flex-direction: column;
+
+        ion-list-header.list-title {
+            justify-self: flex-start;
+            --padding-start: 0px;
+            padding-left: var(--padding-start);
+        }
+
+        ion-button {
+            font-size: 0.75rem;
+
+            ion-icon {
+                padding-right: 4px;
+            }
+        }
+    }
+}
+
+ion-button {
+    &.edit-task {
+        visibility: hidden;
+
+        &:hover {
+            --background: #d3d3d3 !important;
+
+            ion-icon {
+                color: black !important;
+            }
+        }
+    }
+}
+
+ion-icon {
+    color: #333333;
 }

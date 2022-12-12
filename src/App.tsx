@@ -14,11 +14,17 @@ import {
   IonTabs,
   IonLabel,
   IonContent,
+  IonHeader, 
+  IonTitle,
+  IonToolbar,
+  IonButtons,
+  IonBackButton
 } from "@ionic/react";
 import { addOutline, clipboardOutline, personOutline } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 
 import { Redirect, Route } from "react-router";
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -54,10 +60,8 @@ import CreateBoard from "./pages/createBoard";
 import MyBoards from "./pages/MyBoards";
 import { useEffect, useState } from "react";
 
-const cards = new Cards([
-  new Card("card1", "<Draggable 1 />"),
-  new Card("card2", "<Draggable 2 />"),
-]);
+
+const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
 const group = new Group("group-1", "group1");
 group.cards = cards;
 
@@ -75,6 +79,19 @@ const App: React.FC = () => {
 
   return (
     <IonApp>
+
+        {/* <IonHeader>
+                <IonToolbar>
+                    <IonTitle>{ project.title }</IonTitle>
+                    <IonButtons slot="start">
+                        <IonBackButton />
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader> */}
+        <div className="container">
+            <ProjectBoard title={project.title} groups={project.groups} members={project.members}  />
+        </div>
+
       {loggedIn ? (
         <IonReactRouter>
           <IonTabs>
@@ -148,6 +165,7 @@ const App: React.FC = () => {
             </IonReactRouter>
         </>
       )}
+abhinavmerge
     </IonApp>
   );
 };

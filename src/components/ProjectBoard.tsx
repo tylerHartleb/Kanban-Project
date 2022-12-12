@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-
+import { 
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButtons,
+    IonBackButton
+} from '@ionic/react';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
 
@@ -40,7 +46,6 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
 
     return (
         <div className="project-board">
-            <h2>{ title }</h2>
             <DragDropContext onDragEnd={handleOnDragEnd}>
                 <div className="board-content">
                     <h1>{'<DragDropContext />'}</h1>
