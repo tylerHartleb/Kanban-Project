@@ -67,7 +67,10 @@ const CreateAcc: React.FC = () => {
       const response = await userActionAPI.changePassword({password:userPass});
       const data = await response.json();
 
-    } catch (err) {}
+    } catch (err:any) {
+
+      setErrMsg2(err.message);
+    }
   };
 
   return (
