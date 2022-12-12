@@ -36,6 +36,26 @@ const CreateAcc: React.FC = () => {
   const [errMsg2, setErrMsg2] = useState(""); //For the confirm Password field
 
 
+  const getEmail= async()=>{
+  
+    try{
+    const response= await userActionAPI.getUserInfo();
+    const data= await response.json();
+    setUserEmail(data.email);
+
+    }
+    
+    catch (err:any) {
+
+      setErrMsg2(err.message);
+    }
+    
+  }
+
+  useEffect(()=>{
+    getEmail();
+  
+  }, [])
 
   //Request a verification question from the server
   const changePassword = async () => {

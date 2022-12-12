@@ -11,11 +11,11 @@ const requestOptionsGet = {
   body: JSON.stringify(""),
 };
 
-const userAuthApi = {
+const userAuthAPI = {
   createAccount: async (param:any) => {let temp =JSON.stringify(param); console.log(temp); requestOptionsPost.body=temp; return await fetch("localhost/api/users", requestOptionsPost);},
   login: async (param:any) => {let temp=JSON.stringify(param); return await fetch("", requestOptionsPost);},
   requestVerification: async (param:any) => {let temp=JSON.stringify(param); return await fetch("", requestOptionsPost);},
   verifyAnswer: async (param:any) => {let temp=JSON.stringify(param); return await fetch("", requestOptionsPost);}, 
 }
 
-export default userAuthApi
+export default userAuthAPI
