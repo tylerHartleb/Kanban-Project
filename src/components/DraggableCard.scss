@@ -2,7 +2,6 @@
 
 .draggable-card {
     width: auto;
-    padding: 0.5rem;
 }
 
 .card-modal__main {
@@ -22,6 +21,10 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
 }
 
 .card-modal__sidebar {
@@ -32,6 +35,11 @@ ion-card {
     &.task {
         --background: #fff !important;
         --color: #000 !important;
+        --margin-start: 8px;
+        --margin-end: 8px;
+
+        margin-left: 4px;
+        margin-right: 4px;
 
         cursor: pointer;
 
@@ -41,6 +49,22 @@ ion-card {
             ion-button.edit-task {
                 visibility: visible;
             }
+        }
+
+        ion-card-header.task-header {
+            padding: 16px;
+            
+            flex-direction: row;
+            display: flex;
+            align-items: flex-start;
+
+            ion-card-title {
+                font-size: 1.125rem;
+            }
+        }
+
+        ion-card-content {
+            padding: 16px;
         }
     }
 }
@@ -78,6 +102,9 @@ ion-list {
 ion-button {
     &.edit-task {
         visibility: hidden;
+        position: absolute;
+        top: 2px;
+        right: 2px;
 
         &:hover {
             --background: #d3d3d3 !important;

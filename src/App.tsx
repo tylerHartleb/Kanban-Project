@@ -16,8 +16,6 @@ import {
   IonContent,
   IonHeader, 
   IonTitle,
-  IonToolbar,
-  IonButtons,
   IonBackButton
 } from "@ionic/react";
 import { addOutline, clipboardOutline, personOutline } from "ionicons/icons";
@@ -50,8 +48,6 @@ import { Cards, Card, Group, Members, IProject } from "./classes/KanbanClasses";
 
 /* Custom Components */
 import ProjectBoard from "./components/ProjectBoard";
-import { KanbanData, KanbanGroup } from "./types/KanbanTypes";
-import { Project } from "./classes/Project";
 import LoginPage from "./pages/loginPage";
 import CantLogin from "./pages/cantLogin";
 import CreateAcc from "./pages/createAcc";
@@ -60,18 +56,10 @@ import CreateBoard from "./pages/createBoard";
 import MyBoards from "./pages/MyBoards";
 import { useEffect, useState } from "react";
 
-
-const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
-const group = new Group("group-1", "group1");
-group.cards = cards;
-
-const project = new Project("Test-Board");
-project.groups.push(group);
-
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
     console.log("Rendered Main APP");
@@ -79,27 +67,12 @@ const App: React.FC = () => {
 
   return (
     <IonApp>
-
-        {/* <IonHeader>
-                <IonToolbar>
-                    <IonTitle>{ project.title }</IonTitle>
-                    <IonButtons slot="start">
-                        <IonBackButton />
-                    </IonButtons>
-                </IonToolbar>
-            </IonHeader> */}
-        <div className="container">
-            <ProjectBoard title={project.title} groups={project.groups} members={project.members}  />
-        </div>
-
       {loggedIn ? (
         <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
               <Route exact path="/MyBoards">
-                <IonContent>
                   <MyBoards />
-                </IonContent>
               </Route>
               <Route exact path="/CreateBoard">
                 <IonContent>
@@ -165,7 +138,6 @@ const App: React.FC = () => {
             </IonReactRouter>
         </>
       )}
-abhinavmerge
     </IonApp>
   );
 };

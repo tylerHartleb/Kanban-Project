@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { 
+import {
+    IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
     IonButtons,
-    IonBackButton
+    IonBackButton,
+    IonPage
 } from '@ionic/react';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
@@ -14,6 +16,7 @@ import { reorder } from '../scripts/movement-utils';
 import { Cards, Group, IProject } from "../classes/KanbanClasses";
 
 import "./ProjectBoard.scss";
+import { group } from "console";
 
 const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
     const [state, updateState] = useState(groups);
@@ -44,19 +47,31 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
         }
     }
 
+    const page = useRef(undefined);
+    const [presentingElement, setPresentingElement] = useState<HTMLIonContentElement | undefined>(undefined);
+
     return (
-        <div className="project-board">
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div className="board-content">
-                    <h1>{'<DragDropContext />'}</h1>
-                    {state.map((group) => {
-                        return (
-                            <DroppableGroup groupData={group} key={group.id} />
-                        )
-                    })}
-                </div>
-            </DragDropContext>
-        </div>
+        <>
+            <IonHeader>
+                <IonToolbar>
+                <IonButtons slot="start">
+                    <IonBackButton></IonBackButton>
+                </IonButtons>
+                <IonTitle>{ title }</IonTitle>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent className="project-board">
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <div className="board-content">
+                        {state.map((group) => {
+                            return (
+                                <DroppableGroup groupData={group} key={group.id} />
+                            )
+                        })}
+                    </div>
+                </DragDropContext>
+            </IonContent>
+        </>
     );
 }
 
