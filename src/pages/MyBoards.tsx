@@ -26,10 +26,11 @@ import {
   IonNav,
   IonNavLink,
   IonPage,
-  IonApp
+  IonApp,
+  IonSpinner,
 } from "@ionic/react";
 import { RefresherEventDetail } from "@ionic/core"
-import { useEffect, useState, useRef, createContext } from "react";
+import { useEffect, useState, useRef, createContext, useCallback } from "react";
 
 // #region Classes & Types
 import { KanbanData, KanbanGroup } from "../types/KanbanTypes";
@@ -46,63 +47,38 @@ import "./MyBoards.scss";
 import ProjectBoard from "../components/ProjectBoard";
 // #endregion
 
+import { getBoards } from "../clientAPI/boardActionAPI";
+
 // #region dummy data
 
 const projects: Project[] = [];
 
-const cards1 = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
-const group1 = new Group("group-1", "group1");
-group1.cards = cards1;
 
-const project1 = new Project("SENG513");
-project1.groups.push(group1);
-projects.push(project1)
+for (let i = 0; i < 15; i++) {
+  const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
+  const group = new Group("group-1", "group1");
+  group.cards = cards;
 
-const cards2 = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
-const group2 = new Group("group-1", "group1");
-group2.cards = cards2;
-
-const cards3 = new Cards([new Card("card3", "card3"), new Card("card4", "card4")])
-const group3 = new Group("group-2", "group2");
-group3.cards = cards3;
-
-const project2 = new Project("CPSC584");
-project2.groups.push(group2);
-project2.groups.push(group3);
-projects.push(project2)
-
+  const project = new Project(`SENG513-${i}`);
+  project.groups.push(group);
+  projects.push(project)
+}
 // #endregion
 
 export const PageContext = createContext(null as HTMLElement | null);
 
 const MyBoards: React.FC = () => {
-  // const page = useRef(null);
-  // const [presentingElement, setPresentingElement] = useState<HTMLElement | null>(null);
-
-  
-  
-  
-
-  // // #region Effects
-  // useEffect(() => {
-  //   setPresentingElement(page.current);
-  // }, []);
-  // #endregion
 
   return (
-    // <IonPage ref={page}>
-    //   <PageContext.Provider value={presentingElement}>
-        <IonNav root={() => <MyBoardsPage />} />
-    //   </PageContext.Provider>
-    // </IonPage>
+    <IonNav root={() => <MyBoardsPage />} />
+
   );
 };
 
 const MyBoardsPage: React.FC = () => {
-  const [results, setResults] = useState([...projects]);
-  // useEffect(()=>{
-  //   console.log("hello from your boards")
-  // }, [])
+
+  const [boards, setBoards] = useState(projects);
+  const [results, setResults] = useState(boards);
 
   // #region Handlers
   const handleSearch = (ev: Event) => {
@@ -120,6 +96,17 @@ const MyBoardsPage: React.FC = () => {
       event.detail.complete();
     }, 2000);
   }
+
+  const fetchData = useCallback(async () => {
+    const data = await getBoards() as Project[];
+  
+    //setBoards(data);
+  }, [])
+
+  // #region Hooks
+  useEffect(() => {
+    fetchData().catch();
+  }, []);
   // #endregion
 
   return (
@@ -142,8 +129,6 @@ const MyBoardsPage: React.FC = () => {
             <IonSearchbar className="collapsible" debounce={250} onIonChange={(event) => handleSearch(event)}></IonSearchbar>
           </IonToolbar>
         </IonHeader>
-
-
         
         <IonList>
           { results.map((project, index) => (
