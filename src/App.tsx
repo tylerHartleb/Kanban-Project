@@ -86,10 +86,6 @@ const App: React.FC = () => {
                     </IonButtons>
                 </IonToolbar>
             </IonHeader> */}
-        <div className="container">
-            <ProjectBoard title={project.title} groups={project.groups} members={project.members}  />
-        </div>
-
       {loggedIn ? (
         <IonReactRouter>
           <IonTabs>

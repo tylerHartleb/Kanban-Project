@@ -50,8 +50,7 @@ const LoginPage: React.FC = () => {
 
     try{
 
-      const response= await userAuthAPI.login({email:userEmail, password:userPass});
-      const data = await response.json();
+      const data= await userAuthAPI.login({email:userEmail, password:userPass});
       localStorage.setItem('token', data.token)
       //Redirect 
       // history.push("/CantLogin"); // Programmaticaly navigate
@@ -63,6 +62,7 @@ const LoginPage: React.FC = () => {
 
     catch(err:any){
       
+      // console.log(err)
       setErrMsg2(err.message);
 
     }
