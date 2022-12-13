@@ -65,8 +65,10 @@ import { getBoards } from "../clientAPI/boardActionAPI";
 export const PageContext = createContext(null as HTMLElement | null);
 
 const MyBoards: React.FC = () => {
+
   return (
     <IonNav root={() => <MyBoardsPage />} />
+
   );
 };
 

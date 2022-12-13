@@ -16,7 +16,8 @@ import {
   IonContent,
   IonHeader, 
   IonTitle,
-  IonBackButton
+  IonBackButton,
+  IonPage
 } from "@ionic/react";
 import { addOutline, clipboardOutline, personOutline } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
@@ -59,7 +60,7 @@ import { useEffect, useState } from "react";
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     console.log("Rendered Main APP");
@@ -75,7 +76,7 @@ const App: React.FC = () => {
           <IonTabs>
             <IonRouterOutlet>
               <Route exact path="/MyBoards">
-                  <MyBoards />
+                <IonContent><MyBoards /></IonContent>
               </Route>
               <Route exact path="/CreateBoard">
                 <IonContent>
@@ -88,7 +89,7 @@ const App: React.FC = () => {
                 </IonContent>
               </Route>
               <Route exact path="/">
-                <Redirect to="/MyBoards" />
+                <Redirect to="/MyAccount" />
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">

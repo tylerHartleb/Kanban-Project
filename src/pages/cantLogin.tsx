@@ -175,6 +175,7 @@ const CantLogin: React.FC = () => {
       <br></br>
         <IonRow class="ion-justify-content-start ion-align-items-start"><IonCol><IonTitle>Can't Login?</IonTitle></IonCol></IonRow>
         <hr></hr>
+        <div className="otherOptions">
         <IonRow class="ion-justify-content-center ion-align-items-center">
                   <IonCol>
                     <IonItem className={`${errMsg4==="" && 'ion-valid'} ${errMsg4!==""  && 'ion-invalid'}`}>
@@ -189,6 +190,7 @@ const CantLogin: React.FC = () => {
                       <IonItem lines="none"><IonButton onClick={()=>{requestVerHandler()}} size="default">Reset Password</IonButton></IonItem>
                   </IonCol>
         </IonRow>
+        </div>
         </IonGrid>
     
     )

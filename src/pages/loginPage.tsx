@@ -103,20 +103,7 @@ const LoginPage: React.FC<any> = (props:any) => {
                   <IonCol>
                       <IonItem lines="none"><IonButton size="default" onClick={()=>{loginHandler()}}>Login</IonButton></IonItem>
                   </IonCol>
-              </IonRow>
-              <IonRow class="ion-justify-content-center ion-align-items-center">
-                  <IonCol>
-                    <IonItem lines="none"><IonText>OR</IonText></IonItem>
-                  </IonCol>
-              </IonRow>
-              <IonRow class="ion-justify-content-center ion-align-items-center">
-                  <IonCol>
-                  <IonItem lines="none">
-                    <IonButton size="default"> <IonIcon icon={logoGoogle} slot="start"></IonIcon> Continue with Google</IonButton>
-                    </IonItem>
-                  </IonCol>
-              </IonRow>
-              
+              </IonRow>              
               {/* <IonItemDivider className="botDivider"></IonItemDivider> */}
               <hr></hr>
               <br></br>
