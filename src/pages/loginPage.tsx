@@ -21,7 +21,7 @@ import { useHistory } from "react-router";
 import "./loginPage.css"
 
 
-const LoginPage: React.FC = () => {
+const LoginPage: React.FC<any> = (props:any) => {
 
   const [userEmail, setUserEmail]=useState("");
   const [userPass, setUserPass]=useState("");
@@ -50,9 +50,11 @@ const LoginPage: React.FC = () => {
 
     try{
 
-      const response= await userAuthAPI.login({email:userEmail, password:userPass});
-      const data = await response.json();
+      const data= await userAuthAPI.login({email:userEmail, password:userPass});
       localStorage.setItem('token', data.token)
+      console.log(props);
+      props.props(true);
+      history.push("/");
       //Redirect 
       // history.push("/CantLogin"); // Programmaticaly navigate
       //And change is Logged in
@@ -61,7 +63,10 @@ const LoginPage: React.FC = () => {
 
     }
 
-    catch(err){
+    catch(err:any){
+      
+      // console.log(err)
+      setErrMsg2(err.message);
 
     }
 
@@ -98,20 +103,7 @@ const LoginPage: React.FC = () => {
                   <IonCol>
                       <IonItem lines="none"><IonButton size="default" onClick={()=>{loginHandler()}}>Login</IonButton></IonItem>
                   </IonCol>
-              </IonRow>
-              <IonRow class="ion-justify-content-center ion-align-items-center">
-                  <IonCol>
-                    <IonItem lines="none"><IonText>OR</IonText></IonItem>
-                  </IonCol>
-              </IonRow>
-              <IonRow class="ion-justify-content-center ion-align-items-center">
-                  <IonCol>
-                  <IonItem lines="none">
-                    <IonButton size="default"> <IonIcon icon={logoGoogle} slot="start"></IonIcon> Continue with Google</IonButton>
-                    </IonItem>
-                  </IonCol>
-              </IonRow>
-              
+              </IonRow>              
               {/* <IonItemDivider className="botDivider"></IonItemDivider> */}
               <hr></hr>
               <br></br>

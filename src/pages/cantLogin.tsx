@@ -15,10 +15,12 @@ import {
   IonItemDivider,
   IonTitle,
   IonRouterLink,
-  IonNote
+  IonNote, 
+  IonBackButton
 } from "@ionic/react";
 import { useState } from "react";
 import userAuthAPI from "../clientAPI/userAuthAPI"
+import userActionAPI from "../clientAPI/userActionAPI";
 
 const CantLogin: React.FC = () => {
   
@@ -29,10 +31,11 @@ const CantLogin: React.FC = () => {
   const [errMsg4, setErrMsg4] = useState(""); // For the email field 
   const [codeSent, setCodeSent]= useState(false);
   // const [securityQuestion, setSecurityQuestion] =useState("");
-  const [securityQuestion, setSecurityQuestion] =useState("What was your favorite animal?");
+  const [securityQuestion, setSecurityQuestion] =useState("");
   const [securityAnswer, setSecurityAnswer] =useState("");
   const [userPass, setUserPass]=useState("");
   const [confirmPass, setConfirmPass] =useState("");
+  const [sucessMsg, setSuccessMsg]= useState("");
 
 
   //Request a verification question from the server
@@ -50,15 +53,15 @@ const CantLogin: React.FC = () => {
 
     try{
 
-      const response= await userAuthAPI.requestVerification({email:userEmail});
-      const data = await response.json();
+      const data= await userAuthAPI.requestVerification({email:userEmail});
       setCodeSent(true);
-      setSecurityQuestion(data.securityQuestion);
+      setSecurityQuestion(data.securityQ);
 
 
     }
 
-    catch(err){
+    catch(err:any){
+      setErrMsg4(err.message);
 
     }
 
@@ -89,14 +92,18 @@ const CantLogin: React.FC = () => {
 
     try{
       
-      const response= await userAuthAPI.requestVerification({email:userEmail});
-      const data = await response.json();
+      const data= await userAuthAPI.verifyAnswer({email:userEmail, answer:securityAnswer});
+      const token= data.token;
+      console.log("Token", token);
+      const data1= await userActionAPI.changePasswordToken(token, {password:userPass});
       setCodeSent(true);
-      setSecurityQuestion(data.securityQuestion);
+      setSuccessMsg("Changed password!");
 
     }
 
-    catch (err){
+    catch (err:any){
+
+      setErrMsg3(err.message)
 
     }
 
@@ -110,6 +117,7 @@ const CantLogin: React.FC = () => {
                   <IonCol>
                     <IonItem lines="none">
                       <IonLabel><IonText><b>Security Question:</b></IonText></IonLabel>
+                      <IonButton  onClick={()=>{setSecurityQuestion("")}}slot= "start">Return </IonButton>
                     </IonItem>
                   </IonCol>
         </IonRow>
@@ -133,7 +141,7 @@ const CantLogin: React.FC = () => {
                   <IonCol>
                     <IonItem className={`${errMsg1==="" && 'ion-valid'} ${errMsg1!==""  && 'ion-invalid'}`}>
                         <IonLabel position="floating">Enter new password:</IonLabel>
-                        <IonInput onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
+                        <IonInput placeholder= "" onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
                         <IonNote slot="error">{errMsg1}</IonNote>
                     </IonItem>
                   </IonCol>
@@ -152,6 +160,11 @@ const CantLogin: React.FC = () => {
                       <IonItem lines="none"><IonButton onClick={()=>{verifyAnswer()}} size="default">Reset Password</IonButton></IonItem>
                   </IonCol>
         </IonRow>
+        <IonRow class="ion-justify-content-center ion-align-items-center">
+                  <IonCol>
+                      <IonText color="success">{sucessMsg}</IonText>
+                  </IonCol>
+        </IonRow>
       </IonGrid>
       )
   };
@@ -162,6 +175,7 @@ const CantLogin: React.FC = () => {
       <br></br>
         <IonRow class="ion-justify-content-start ion-align-items-start"><IonCol><IonTitle>Can't Login?</IonTitle></IonCol></IonRow>
         <hr></hr>
+        <div className="otherOptions">
         <IonRow class="ion-justify-content-center ion-align-items-center">
                   <IonCol>
                     <IonItem className={`${errMsg4==="" && 'ion-valid'} ${errMsg4!==""  && 'ion-invalid'}`}>
@@ -176,6 +190,7 @@ const CantLogin: React.FC = () => {
                       <IonItem lines="none"><IonButton onClick={()=>{requestVerHandler()}} size="default">Reset Password</IonButton></IonItem>
                   </IonCol>
         </IonRow>
+        </div>
         </IonGrid>
     
     )

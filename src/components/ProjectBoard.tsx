@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { 
+import {
+    IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
     IonButtons,
-    IonBackButton
+    IonBackButton,
+    IonPage
 } from '@ionic/react';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
@@ -40,23 +42,44 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
             if (groupToUpdate) groupToUpdate.cards = cards;
             updateState(updatedState);
         } else {
-            console.log('Implement move between list object')
+                const sourceClone = getGroupItems(source.droppableId);
+                const destClone = getGroupItems(destination.droppableId);
+                const [ removed ] = sourceClone.splice(source.index, 1);
+              
+                destClone.splice(destination.index, 0, removed);
+
+                const updatedState = [ ...state ];
+                const sourceToUpdate = updatedState.find(group => group.id === source.droppableId);
+                const destToUpdate = updatedState.find(group => group.id === destination.droppableId);
+
+                if (sourceToUpdate) sourceToUpdate.cards = sourceClone;
+                if (destToUpdate) destToUpdate.cards = destClone;
+                updateState(updatedState);
         }
-    }
+    } 
 
     return (
-        <div className="project-board">
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div className="board-content">
-                    <h1>{'<DragDropContext />'}</h1>
-                    {state.map((group) => {
-                        return (
-                            <DroppableGroup groupData={group} key={group.id} />
-                        )
-                    })}
-                </div>
-            </DragDropContext>
-        </div>
+        <>
+            <IonHeader>
+                <IonToolbar>
+                <IonButtons slot="start">
+                    <IonBackButton></IonBackButton>
+                </IonButtons>
+                <IonTitle>{ title }</IonTitle>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent className="project-board">
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <div className="board-content">
+                        {state.map((group) => {
+                            return (
+                                <DroppableGroup groupData={group} key={group.id} />
+                            )
+                        })}
+                    </div>
+                </DragDropContext>
+            </IonContent>
+        </>
     );
 }
 

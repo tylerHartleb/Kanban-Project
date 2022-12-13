@@ -26,16 +26,38 @@ import { useEffect, useState } from "react";
 import {addOutline, clipboardOutline, personOutline} from 'ionicons/icons'
 import userActionAPI from "../clientAPI/userActionAPI";
 
-const CreateAcc: React.FC = () => {
+const CreateAcc: React.FC<any> = (props) => {
 
-  const [userEmail, setUserEmail]=useState("TestEmail@gmail.com");
+  const [userEmail, setUserEmail]=useState("");
   const [userPass, setUserPass]=useState("");
   const [confirmPass, setConfirmPass]=useState("");
   const [isValid, setIsValid]=useState(false);
   const [errMsg1, setErrMsg1] = useState(""); //For the password field
   const [errMsg2, setErrMsg2] = useState(""); //For the confirm Password field
+  const [sucessMsg, setSuccessMsg]= useState("");
 
 
+
+
+  const getEmail= async()=>{
+  
+    try{
+    const data= await userActionAPI.getUserInfo();
+    setUserEmail(data.email);
+
+    }
+    
+    catch (err:any) {
+
+      setErrMsg2(err.message);
+    }
+    
+  }
+
+  useEffect(()=>{
+    getEmail();
+  
+  }, [])
 
   //Request a verification question from the server
   const changePassword = async () => {
@@ -43,16 +65,19 @@ const CreateAcc: React.FC = () => {
 
     if (userPass.trim() == "") {
       setErrMsg1("Required Field");
+      setSuccessMsg("");
       isValid = false;
     }
 
     if (confirmPass.trim() == "") {
       setErrMsg2("Required Field");
+      setSuccessMsg("");
       isValid = false;
     }
 
     if (userPass.trim() != confirmPass.trim()){
       setErrMsg2("Passwords must match!");
+      setSuccessMsg("");
       isValid = false;
     }
 
@@ -64,10 +89,16 @@ const CreateAcc: React.FC = () => {
     if (!isValid) return;
 
     try {
-      const response = await userActionAPI.changePassword({password:userPass});
-      const data = await response.json();
+      const data = await userActionAPI.changePassword({password:userPass});
+      setErrMsg1("");
+      setErrMsg2("");
+      setSuccessMsg("Successfully Changed Password")
+    
 
-    } catch (err) {}
+    } catch (err:any) {
+
+      setErrMsg2(err.message);
+    }
   };
 
   return (
@@ -110,6 +141,11 @@ const CreateAcc: React.FC = () => {
             </IonCol>
         </IonRow>
         </IonGrid>
+        <IonRow class="ion-justify-content-center ion-align-items-center">
+                  <IonCol>
+                      <IonText color="success">{sucessMsg}</IonText>
+                  </IonCol>
+        </IonRow>
         <IonRow class="ion-justify-content-start ion-align-items-start">
             <IonCol>
             <IonItem lines="none">
@@ -128,6 +164,14 @@ const CreateAcc: React.FC = () => {
             <IonCol>
             <IonItem lines="none">
               <IonButton fill="outline" onClick={()=>{/* Swap to my boards*/ }} routerLink="/CreateBoard"><IonIcon icon={addOutline} slot="start"></IonIcon> Create a new board </IonButton>
+            </IonItem>
+            </IonCol>
+        </IonRow>
+
+        <IonRow class="ion-justify-content-start ion-align-items-start">
+            <IonCol>
+            <IonItem lines="none">
+              <IonButton fill="outline" onClick={()=>{ localStorage.removeItem("token"); props.changeLogin(false);}} routerLink="/">Log Out</IonButton>
             </IonItem>
             </IonCol>
         </IonRow>

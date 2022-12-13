@@ -75,14 +75,17 @@ const CreateAcc: React.FC = () => {
 
     try {
       console.log(securityQuestion);
+      console.log(userEmail);
       const response = await userAuthAPI.createAccount({
         name:userEmail, email: userEmail, password:userPass, securityQ:securityQuestion, securityA: securityAnswer
       });
 
-      const data = await response.json();
+      setErrMsg5("");
+       setSuccessMsg("Account succesfully created!");
 
 
-    } catch (err:any) {
+    } 
+    catch (err:any) {
 
       setErrMsg5(err.message);
 
@@ -187,10 +190,10 @@ const CreateAcc: React.FC = () => {
               }}
             ></IonInput>
             <IonNote slot="error">{errMsg5}</IonNote>
-            {successMsg}
           </IonItem>
         </IonCol>
       </IonRow>
+      <IonRow><IonCol><IonText color="success">{successMsg}</IonText></IonCol></IonRow>
       <IonRow class="ion-justify-content-start ion-align-items-start">
         <IonCol>
           <IonItem lines="none">
