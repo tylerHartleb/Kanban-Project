@@ -24,6 +24,4 @@ export class Group implements IGroupData {
     get cards(): Cards {
         return this._cards;
     }
-
-    // TODO: serialization methods
 }

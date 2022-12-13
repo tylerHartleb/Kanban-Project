@@ -1,19 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-
+import {
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
+    IonPage,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonIcon,
+    IonInput,
+    useIonActionSheet,
+    IonNavLink
+} from '@ionic/react';
+import { 
+    OverlayEventDetail,
+} from '@ionic/core';
+import { cogOutline, addOutline } from 'ionicons/icons';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
-import { Cards, Group, IProject } from "../classes/KanbanClasses";
+import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
+import { addGroup, deleteTaskList, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
+import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
+import { getDefaultNormalizer } from "@testing-library/react";
+import { setgroups } from "process";
 
-const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
-    const [state, updateState] = useState(groups);
+const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
+    const [groups, updateGroups] = useState([] as Group[]);
+    const [isAdding, setIsAdding] = useState(false);
+    const [user, setUser] = useState({} as any);
+
+    const [present] = useIonActionSheet();
+    const callAction = (detail: OverlayEventDetail) => {
+        const actionToCall = detail.data.action;
+        
+        if (actionToCall == "add") {
+            setIsAdding(true);
+        } else if (actionToCall == 'delete') {
+            deleteBoard();
+        }
+    }
+
+    function deleteBoard() {
+        deleteSelBoard(id);
+    }
+
+    function deleteGroup(id: string) {
+        deleteTaskList(id);
+        const newGroups = groups.filter(group => {
+            return group.id != id;
+        })
+
+        updateGroups(newGroups);
+    }
 
     function getGroupItems(id: String): Cards {
-        const result = state.find(group => group.id === id)?.cards ?? [];
+        const result = groups.find(group => group.id === id)?.cards ?? [];
         console.log(result)
         return result;
     }
@@ -29,29 +78,163 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
                 source.index,
                 destination.index
             )
-            const updatedState = [ ...state ];
+            const updatedState = [ ...groups ];
             const groupToUpdate = updatedState.find(group => group.id === destination.droppableId);
-            if (groupToUpdate) groupToUpdate.cards = cards;
-            updateState(updatedState);
+            if (groupToUpdate) {
+                groupToUpdate.cards = cards;
+                const cardToUpdate = groupToUpdate.cards.at(destination.index)
+                if (cardToUpdate) {
+                    updateTask(cardToUpdate.id, { position: destination.index })
+                }
+            } 
+            updateGroups(updatedState);
         } else {
-            console.log('Implement move between list object')
+                const sourceClone = getGroupItems(source.droppableId);
+                const destClone = getGroupItems(destination.droppableId);
+                const [ removed ] = sourceClone.splice(source.index, 1);
+              
+                destClone.splice(destination.index, 0, removed);
+
+                const updatedState = [ ...groups ];
+                const sourceToUpdate = updatedState.find(group => group.id === source.droppableId);
+                const destToUpdate = updatedState.find(group => group.id === destination.droppableId);
+
+                if (destToUpdate) {
+                    const cardToUpdate = destToUpdate.cards.at(destination.index);
+                    if (cardToUpdate) {
+                        updateTask(cardToUpdate.id, { taskList: destination.droppableId, position: destination.index })
+                    }
+                }
+
+                if (sourceToUpdate) sourceToUpdate.cards = sourceClone;
+                if (destToUpdate) destToUpdate.cards = destClone;
+                updateGroups(updatedState);
         }
     }
 
+    function cancelChanges() {
+        setIsAdding(false);
+    }
+
+    async function saveChanges() {
+        const textarea = document.getElementById("edit-textinput") as HTMLInputElement;
+        const groupTitle = textarea?.value ?? "";
+        
+        const response = await addGroup(id , {  groupTitle: groupTitle});
+        console.log(response);
+
+        await fetchData();
+        
+        setIsAdding(false);
+    }
+
+    const fetchData = useCallback(async () => {
+        const data = await getGroups(id);
+        const userData = await userActionAPI.getUserInfo();
+    
+        const groups: Group[] = data.map((group: { _id: string; title: string; }) => {
+          return new Group(group._id, group.title);
+        });
+
+        Promise.all(
+            groups.map(async (group) => {
+                const taskData = await getTasks(group.id);
+                taskData.sort((a:any,b:any) => a.position - b.position);
+
+                const tasks = taskData.map((task: { title: string, description: string, _id: string, creator: string }) => {
+                    return new Card(task._id, task.title, task.creator, task.description)
+                })
+
+                group.cards = tasks;
+                return group;
+            })
+        ).then(() => {
+            setUser(userData)
+            updateGroups(groups)
+        })
+      }, [])
+    
+      // #region Hooks
+      useEffect(() => {
+        fetchData().catch();
+      }, []);
+      // #endregion
+
     return (
-        <div className="project-board">
-            <h2>{ title }</h2>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div className="board-content">
-                    <h1>{'<DragDropContext />'}</h1>
-                    {state.map((group) => {
-                        return (
-                            <DroppableGroup groupData={group} key={group.id} />
-                        )
-                    })}
-                </div>
-            </DragDropContext>
-        </div>
+        <>
+            <IonHeader>
+                <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonBackButton></IonBackButton>
+                    </IonButtons>
+                    <IonTitle>{ title }</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton 
+                            fill="clear"
+                            onClick={() => {
+                                const buttons = []
+
+                                if (owner == user.id) buttons.push({
+                                    text: 'Delete',
+                                    role: 'destructive',
+                                    data: {
+                                        action: 'delete',
+                                    },
+                                })
+
+                                buttons.push({
+                                    text: 'Add Task List',
+                                    data: {
+                                        action: 'add',
+                                    },
+                                })
+
+                                buttons.push({
+                                    text: 'Cancel',
+                                    role: 'cancel',
+                                    data: {
+                                        action: 'cancel',
+                                    },
+                                })
+
+                                present({
+                                    header: `${title}`,
+                                    buttons: buttons,
+                                    onDidDismiss: ({ detail }) => callAction(detail),
+                                })
+                            }} 
+                        >
+                            <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
+                        </IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent className="project-board">
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <div className="board-content">
+                        {groups.map((group) => {
+                            return (
+                                <DroppableGroup groupData={group} key={group.id} deleteGroup={deleteGroup} />
+                            )
+                        })}
+                    </div>
+                    { isAdding ?
+                        <div className="card-modal__desc-edit">
+                            <IonInput
+                                id="edit-textinput"
+                                autofocus={true}
+                                placeholder="Set new group title"
+                            />
+                            <div className="desc-edit__btns">
+                                <IonButton onClick={() => saveChanges()} >Save</IonButton>
+                                <IonButton onClick={() => cancelChanges()} fill="clear">Cancel</IonButton>
+                            </div>
+                        </div>
+                        : null 
+                    }
+                </DragDropContext>
+            </IonContent>
+        </>
     );
 }
 

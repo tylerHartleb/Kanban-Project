@@ -1,0 +1,23 @@
+.board-header {
+    ion-button {
+        ion-icon {
+            color: #333333;
+        }
+    
+        &.delete-board {
+            visibility: hidden;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+
+            &:hover {
+                visibility: visible;
+                --background: #d3d3d3 !important;
+    
+                ion-icon {
+                    color: red !important;
+                }
+            }
+        }
+    }
+}
