@@ -138,7 +138,7 @@ const CreateAcc: React.FC<any> = (props) => {
                 <IonCol>
                 <IonItem className={`${errMsg1==="" && 'ion-valid'} ${errMsg1!=="" && 'ion-invalid'}`}>
                   <IonLabel position="floating">Enter new password:</IonLabel>
-                  <IonInput onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
+                  <IonInput type="password" onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
                   <IonNote slot="error">{errMsg1}</IonNote>
                 </IonItem>
                 </IonCol>
@@ -147,7 +147,7 @@ const CreateAcc: React.FC<any> = (props) => {
                 <IonCol>
                   <IonItem className={`${errMsg2==="" && 'ion-valid'} ${errMsg2!=="" && 'ion-invalid'}`}> 
                   <IonLabel position="floating">Confirm new password:</IonLabel>
-                  <IonInput onIonInput={(e:any)=>{setConfirmPass(e.target.value);}}></IonInput>
+                  <IonInput type="password" onIonInput={(e:any)=>{setConfirmPass(e.target.value);}}></IonInput>
                   <IonNote slot="error">{errMsg2}</IonNote>
                   </IonItem>
                 </IonCol>

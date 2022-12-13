@@ -93,7 +93,7 @@ const LoginPage: React.FC<any> = (props:any) => {
                   <IonCol>
                     <IonItem className={`${errMsg2==="" && 'ion-valid'} ${errMsg2!==""&& 'ion-invalid'}`}>
                     <IonLabel position="floating">Enter Password</IonLabel>
-                      <IonInput onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
+                      <IonInput type="password" onIonInput={(e:any)=>{setUserPass(e.target.value);}}></IonInput>
                       <IonNote slot="error">{errMsg2}</IonNote>
                     </IonItem>
                   </IonCol>
