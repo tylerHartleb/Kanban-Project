@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useCallback } from "react";
 import { Droppable } from 'react-beautiful-dnd';
 import { 
     IonCard, 
@@ -24,28 +24,49 @@ import {
     IonInputCustomEvent,
     InputChangeEventDetail,
 } from '@ionic/core';
-import { cogOutline, addOutline } from 'ionicons/icons';
+import { cogOutline, addOutline, car } from 'ionicons/icons';
 import { OverlayEventDetail } from '@ionic/core/components';
 
 import DraggableCard from "./DraggableCard";
 import { IDroppableGroup } from "../types/KanbanTypes";
 
+import userActionAPI from "../clientAPI/userActionAPI";
+
 import "./DroppableGroup.scss";
 import { Card } from "../classes/Card";
-import { PageContext } from "../pages/MyBoards";
+
+import { createTask } from "../clientAPI/boardActionAPI";
+
+//create your forceUpdate hook
+function useForceUpdate(){
+    const [value, setValue] = useState(0);
+    return () => setValue(value => value + 1);
+}
 
 const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
     const [state, updateState] = useState(groupData);
     const [isCreating, setCreating] = useState(false);
+    const [user, setUser] = useState({} as { _id: string });
+    const forceUpdate = useForceUpdate();
 
-    const presentingElement = useContext(PageContext) as HTMLElement | undefined;
+    const fetchData = useCallback(async () => {
+        const data = await userActionAPI.getUserInfo();
+
+        setUser(data);
+      }, [])
+    
+      // #region Hooks
+      useEffect(() => {
+        fetchData().catch();
+      }, []);
+      // #endregion
 
     function updateGroupTitle(event: IonInputCustomEvent<InputChangeEventDetail>) {
         const title : string = event.detail.value ?? "";
         state.title = title;
     }
 
-    function createCard(event: IonInputCustomEvent<FocusEvent>) {
+    async function createCard(event: IonInputCustomEvent<FocusEvent>) {
         const relatedTarget = event.detail.relatedTarget as Element;
         if (relatedTarget?.id == "cancel-add") {
             setCreating(false);
@@ -54,11 +75,22 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
         const title = event.target.value as string
         
         if (title) {
-            const templateCard = new Card(Math.random().toString(), title);
+            const templateCard = new Card(Math.random().toString(), title, user._id);
             groupData.cards.push(templateCard);
-        } 
-        
+            createTask(state.id, { title: title });
+            
+        }     
         setCreating(false);
+    }
+
+    async function deleteCard(id: string) {
+        const newCards = state.cards.filter(card => {
+            return card.id != id;
+        })
+
+        state.cards = newCards;
+
+        forceUpdate();
     }
 
     function renderCreateCard() {
@@ -106,14 +138,13 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
       });
 
     function openModal() {
-    present({
-        onWillDismiss: (ev: CustomEvent<OverlayEventDetail>) => {
-        if (ev.detail.data != "") {
-            state.title = ev.detail.data;
-        }
-        },
-        presentingElement: presentingElement,
-    });
+        present({
+            onWillDismiss: (ev: CustomEvent<OverlayEventDetail>) => {
+            if (ev.detail.data != "") {
+                state.title = ev.detail.data;
+            }
+            }
+        });
     }
 
     return (
@@ -148,7 +179,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
                                 <div className="droppable-group__content">
                                     {(state.cards.map((card, index) => {
                                         return(
-                                            <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} />
+                                            <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} deleteCard={deleteCard} />
                                         )
                                     }))}
                                     {provided.placeholder}
@@ -170,6 +201,7 @@ interface GroupModalProps {
 
 const GroupModal: React.FC<GroupModalProps> = ({ onDismiss, title }) => {
     const inputRef = useRef<HTMLIonInputElement>(null);
+
     return (
       <IonPage>
         <IonHeader>

@@ -1,5 +1,3 @@
-import { Members } from "./Members";
-
 export class Cards extends Array<Card> {
     /* Constructor overloads */
     constructor(size?: number | undefined);
@@ -30,16 +28,17 @@ export class Cards extends Array<Card> {
 export class Card implements ICardData {
     id: string;
     title: string;
-    members: Members = [];
+    creator: string;
     // Temp going to make this use markdown
     private _description: string = "";
 
-    constructor(id: string, title: string);
-    constructor(id: string, title: string,  description: string);
+    constructor(id: string, title: string, creator: string);
+    constructor(id: string, title: string, creator: string, description: string);
 
-    constructor(id: string, title: string, description?: string) {
+    constructor(id: string, title: string, creator: string, description?: string) {
         this.id = id;
         this.title = title;
+        this.creator = creator;
         this._description = description ?? this._description;
     }
 
@@ -52,28 +51,13 @@ export class Card implements ICardData {
     set description(newDesc: string) {
         this._description = newDesc;
     }
-
-    /* Serialization methods */
-    toJSON(): ICardData {
-        return {
-            id: this.id,
-            title: this.title,
-            description: this.description,
-            members: this.members
-        };
-    }
-
-    static fromJSON(parsedObject : ICardData): Card {
-        const tuple: CardTuple = Object.values(parsedObject) as CardTuple;
-        return new Card(...tuple);
-    }
 }
 
 export interface ICardData {
     id: string,
     title: string,
     description: string,
-    members: Members
+    creator: string
 }
 
 type CardTuple = [id: string, title: string, description: string];

@@ -19,10 +19,11 @@ import { cogOutline, addOutline } from 'ionicons/icons';
 import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
-import { Cards, Group, IProject } from "../classes/KanbanClasses";
-import { addGroup, getGroups } from "../clientAPI/boardActionAPI";
+import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
+import { addGroup, getGroups, getTasks } from "../clientAPI/boardActionAPI";
 
 import "./ProjectBoard.scss";
+import { getDefaultNormalizer } from "@testing-library/react";
 
 const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
     const [groups, updateGroups] = useState([] as Group[]);
@@ -89,7 +90,21 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
           return new Group(group._id, group.title);
         });
 
-        updateGroups(groups);
+        Promise.all(
+            groups.map(async (group) => {
+                const taskData = await getTasks(group.id);
+                taskData.sort((a:any,b:any) => a.position - b.position);
+
+                const tasks = taskData.map((task: { title: string, description: string, _id: string, creator: string }) => {
+                    return new Card(task._id, task.title, task.creator, task.description)
+                })
+
+                group.cards = tasks;
+                return group;
+            })
+        ).then(() => {
+            updateGroups(groups)
+        })
       }, [])
     
       // #region Hooks

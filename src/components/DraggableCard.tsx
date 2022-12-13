@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import {
     IonAvatar,
@@ -52,9 +52,11 @@ import { Card, ICardData } from '../classes/KanbanClasses';
 import "./DraggableCard.scss";
 import 'katex/dist/katex.min.css'
 import { PageContext } from '../pages/MyBoards';
+import userActionAPI from '../clientAPI/userActionAPI';
+import { deleteTask } from '../clientAPI/boardActionAPI';
 
 // #region Card
-const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index }) => {
+const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, deleteCard }) => {
     // States
     const [state, updateState] = useState(cardData);
 
@@ -79,7 +81,14 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index })
         
         if (actionToCall == "edit") {
             openModal();
+        } else if (actionToCall == 'delete') {
+            removeCard();
         }
+    }
+
+    async function removeCard() {
+        await deleteTask(state.id);
+        deleteCard(state.id);
     }
 
     return (
@@ -159,6 +168,7 @@ const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) 
     const [card, updateCard] = useState(cardData);
     const [isEdit, setIsEdit] = useState(false);
     const [edit, updateEdit] = useState(card.description);
+    const [user, setUser] = useState({} as { name: string });
 
     function saveChanges() {
         const textarea = document.getElementById("edit-textarea");
@@ -175,6 +185,18 @@ const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) 
 
         setIsEdit(false);
     }
+
+    const fetchData = useCallback(async () => {
+        const data = await userActionAPI.getUserInfo();
+
+        setUser(data);
+      }, [])
+    
+      // #region Hooks
+      useEffect(() => {
+        fetchData().catch();
+      }, []);
+      // #endregion
 
     return (
         <IonPage>
@@ -194,26 +216,22 @@ const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) 
                     <div className="card-modal__info">
                         <section className="card-modal__section">
                             <IonItem class="card-label" lines='none'>
-                                <IonIcon icon={peopleOutline} slot="start" />
-                                <IonLabel>{"Member(s)"}</IonLabel>
+                                <IonIcon size='small' icon={peopleOutline} slot="start" />
+                                <IonLabel >{"Creator"}</IonLabel>
                             </IonItem>
 
-                            {card.members.length > 0 ?
+                            {user?.name ?
                                 <div className="card-modal__members">
-                                    {card.members.map((member, index) => (
-                                        <IonItem lines='none' key={index} >
+                                        <IonItem lines='none'>
                                             <IonAvatar slot="start">
                                                 <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
                                             </IonAvatar>
                                             <IonLabel>
-                                                { member.username }
+                                                { user.name }
                                             </IonLabel>
                                         </IonItem>
-                                    ))}
                                 </div>
                             : null}
-
-                            <IonButton fill="outline" size="small">Add members</IonButton>
                         </section>
                     </div>
                     <IonItem>

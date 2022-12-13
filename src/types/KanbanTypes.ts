@@ -3,7 +3,8 @@ import { ICardData, IGroupData } from "../classes/KanbanClasses";
 export type IDraggableCard = {
     cardData: ICardData,
     groupName: string,
-    index: number
+    index: number,
+    deleteCard: (id: string) => void
 }
 
 export type IDroppableGroup = {
