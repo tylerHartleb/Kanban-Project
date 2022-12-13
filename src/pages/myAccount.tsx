@@ -161,21 +161,21 @@ const CreateAcc: React.FC<any> = (props) => {
             <IonRow class="ion-justify-content-start ion-align-items-start">
                 <IonCol>
                 <IonItem lines="none">
-                  <IonButton onClick={()=>{changePassword()}}>Change Password</IonButton>
+                  <IonButton size="default" onClick={()=>{changePassword()}}>Change Password</IonButton>
                 </IonItem>
                 </IonCol>
             </IonRow>
             <IonRow class="ion-justify-content-start ion-align-items-start">
                 <IonCol>
                 <IonItem lines="none">
-                  <IonButton fill="outline" onClick={()=>{ /* Swap to my boards*/ }} routerLink="/MyBoards"><IonIcon icon={clipboardOutline} slot="start"></IonIcon>  My Boards </IonButton>
+                  <IonButton size="default" fill="outline" onClick={()=>{ /* Swap to my boards*/ }} routerLink="/MyBoards"><IonIcon icon={clipboardOutline} slot="start"></IonIcon>  My Boards </IonButton>
                 </IonItem>
                 </IonCol>
             </IonRow>
             <IonRow class="ion-justify-content-start ion-align-items-start">
                 <IonCol>
                 <IonItem lines="none">
-                  <IonButton fill="outline" onClick={()=>{/* Swap to my boards*/ }} routerLink="/CreateBoard"><IonIcon icon={addOutline} slot="start"></IonIcon> Create a new board </IonButton>
+                  <IonButton size="default" fill="outline" onClick={()=>{/* Swap to my boards*/ }} routerLink="/CreateBoard"><IonIcon icon={addOutline} slot="start"></IonIcon> Create a new board </IonButton>
                 </IonItem>
                 </IonCol>
             </IonRow>
@@ -183,7 +183,7 @@ const CreateAcc: React.FC<any> = (props) => {
             <IonRow class="ion-justify-content-start ion-align-items-start">
                 <IonCol>
                 <IonItem lines="none">
-                  <IonButton fill="outline" onClick={()=>{ localStorage.removeItem("token"); props.changeLogin(false);}} routerLink="/">Log Out</IonButton>
+                  <IonButton size ="default" fill="outline" onClick={()=>{ localStorage.removeItem("token"); props.changeLogin(false);}} routerLink="/">Log Out</IonButton>
                 </IonItem>
                 </IonCol>
             </IonRow>

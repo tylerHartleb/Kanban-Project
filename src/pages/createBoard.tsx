@@ -20,10 +20,12 @@ import {
   IonCardTitle,
   IonCardContent,
   IonHeader,
-  IonToolbar
+  IonToolbar,
+  IonIcon
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import userActionAPI from "../clientAPI/userActionAPI";
+import { clipboardOutline } from "ionicons/icons";
 
 const CreateBoard: React.FC = () => {
 
@@ -43,6 +45,10 @@ const CreateBoard: React.FC = () => {
     setSuccessMsg2(succ2);
 
   }
+
+  // useEffect(()=>{
+  //   UpdateErrorSucess("Hello", "I", "Do", "Work");
+  // }, [])
 
 
   const createBoard = async () => {
@@ -115,12 +121,27 @@ const CreateBoard: React.FC = () => {
         
       }
 
-    console.log(errorIndex);
     // console.log(errorIndex);
-    //For every failure grab the failure and customize the msg 
-    
-    // let err2= 
-    // UpdateErrorSucess(err1:"", err2:"", succ1:"", succ2: "" )
+    // console.log(errorIndex);
+    // For every failure grab the failure and customize the msg 
+    let err1="";
+    let err2="";
+    let succ1="New Board Created!";
+    let success2= "Sucessfully invited:";
+    let tCounter=0;
+    for (let counter=0; counter<emailList.length;counter++){
+      if (errorIndex[tCounter]!=counter){
+        let currEmail=emailList[counter];
+        success2=success2.concat(`\n${currEmail}`)
+      }
+      else{
+        tCounter++;
+      }
+      
+    }
+   
+   
+    UpdateErrorSucess(err1, err2, succ1, success2);
     
  
     
@@ -182,10 +203,18 @@ const CreateBoard: React.FC = () => {
             <IonRow class="ion-justify-content-start ion-align-items-start">
                 <IonCol>
                 <IonItem lines="none">
-                  <IonButton size= "default" color="success" onClick={()=>{createBoard()}}>Create Board</IonButton>
+                  <IonButton size= "default" color="success" onClick={()=>{createBoard()}}>Create New Board</IonButton>
                 </IonItem>
                 </IonCol>
             </IonRow>
+            {successMsg1!=""?(<IonRow class="ion-justify-content-start ion-align-items-start">
+                <IonCol>
+                <IonItem lines="none">
+                  <IonButton size="default" fill="outline" onClick={()=>{ /* Swap to my boards*/ }} routerLink="/MyBoards"><IonIcon icon={clipboardOutline} slot="start"></IonIcon>  My Boards </IonButton>
+                </IonItem>
+                </IonCol>
+            </IonRow>):<></>}
+            
             
             
                     
