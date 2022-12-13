@@ -20,7 +20,7 @@ import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
 import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
-import { addGroup, getGroups, getTasks } from "../clientAPI/boardActionAPI";
+import { addGroup, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
 
 import "./ProjectBoard.scss";
 import { getDefaultNormalizer } from "@testing-library/react";
@@ -48,7 +48,13 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
             )
             const updatedState = [ ...groups ];
             const groupToUpdate = updatedState.find(group => group.id === destination.droppableId);
-            if (groupToUpdate) groupToUpdate.cards = cards;
+            if (groupToUpdate) {
+                groupToUpdate.cards = cards;
+                const cardToUpdate = groupToUpdate.cards.at(destination.index)
+                if (cardToUpdate) {
+                    updateTask(cardToUpdate.id, { position: destination.index })
+                }
+            } 
             updateGroups(updatedState);
         } else {
                 const sourceClone = getGroupItems(source.droppableId);
@@ -60,6 +66,13 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
                 const updatedState = [ ...groups ];
                 const sourceToUpdate = updatedState.find(group => group.id === source.droppableId);
                 const destToUpdate = updatedState.find(group => group.id === destination.droppableId);
+
+                if (destToUpdate) {
+                    const cardToUpdate = destToUpdate.cards.at(destination.index);
+                    if (cardToUpdate) {
+                        updateTask(cardToUpdate.id, { taskList: destination.droppableId, position: destination.index })
+                    }
+                }
 
                 if (sourceToUpdate) sourceToUpdate.cards = sourceClone;
                 if (destToUpdate) destToUpdate.cards = destClone;

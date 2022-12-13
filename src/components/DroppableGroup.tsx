@@ -179,7 +179,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
                                 <div className="droppable-group__content">
                                     {(state.cards.map((card, index) => {
                                         return(
-                                            <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} deleteCard={deleteCard} />
+                                            <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} groupId={state.id} deleteCard={deleteCard} />
                                         )
                                     }))}
                                     {provided.placeholder}

@@ -41,12 +41,10 @@ const CreateAcc: React.FC<any> = (props) => {
 
 
 
-  const getEmail= async()=>{
-  
+  const getEmail= async ()=>{
     try{
-    const data= await userActionAPI.getUserInfo();
-    setUserEmail(data.email);
-
+      const data= await userActionAPI.getUserInfo();
+      setUserEmail(data.email);
     }
     
     catch (err:any) {

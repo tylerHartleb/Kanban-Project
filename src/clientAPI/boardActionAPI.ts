@@ -14,6 +14,12 @@ const requestOptionsDelete = {
     headers: { 'Content-Type': 'application/json', 'Authorization':'' },
 };
 
+const requestOptionsPut = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization':'' },
+    body: JSON.stringify("")
+};
+
 const setToken = () =>{
     console.log(localStorage.getItem("token"));
     // let token=JSON.parse(localStorage.getItem("token")!)
@@ -22,6 +28,7 @@ const setToken = () =>{
     requestOptionsGet.headers['Authorization']= `Bearer ${token}` ;
     requestOptionsPost.headers['Authorization']= `Bearer ${token}`;
     requestOptionsDelete.headers['Authorization']= `Bearer ${token}`;
+    requestOptionsPut.headers['Authorization']= `Bearer ${token}`;
 }
 
 export async function getBoards() {
@@ -71,6 +78,15 @@ export async function createTask(id: string, params: any) {
 export async function deleteTask(id: string) {
     setToken();
     const response = await fetch(`http://localhost:5000/api/tasks/${id}`, requestOptionsDelete);
+    const data = await response.json();
+    if (response.ok==false) {throw new Error(data.message)};
+    return data;
+}
+
+export async function updateTask(id: string, params: { taskList?: string, title?: string, description?: string, position?: number }) {
+    setToken();
+    const postData = { ...requestOptionsPut, body: JSON.stringify(params) }
+    const response = await fetch(`http://localhost:5000/api/tasks/${id}`, postData);
     const data = await response.json();
     if (response.ok==false) {throw new Error(data.message)};
     return data;

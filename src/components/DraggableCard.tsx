@@ -53,10 +53,10 @@ import "./DraggableCard.scss";
 import 'katex/dist/katex.min.css'
 import { PageContext } from '../pages/MyBoards';
 import userActionAPI from '../clientAPI/userActionAPI';
-import { deleteTask } from '../clientAPI/boardActionAPI';
+import { deleteTask, updateTask } from '../clientAPI/boardActionAPI';
 
 // #region Card
-const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, deleteCard }) => {
+const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, groupId, deleteCard }) => {
     // States
     const [state, updateState] = useState(cardData);
 
@@ -66,7 +66,8 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, d
     const [presentModal, dismiss] = useIonModal(CardModal, {
         onDismiss: () => dismiss(),
         cardData: state,
-        groupTitle: groupName
+        groupTitle: groupName,
+        groupId: groupId
     });
 
     function openModal() {
@@ -160,11 +161,12 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, d
 interface CardModalProps {
     cardData: ICardData,
     groupTitle: string,
+    groupId: string,
     onDismiss: () => void
 }
 
 // #region Modal Content
-const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) => {
+const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, groupId, onDismiss}) => {
     const [card, updateCard] = useState(cardData);
     const [isEdit, setIsEdit] = useState(false);
     const [edit, updateEdit] = useState(card.description);
@@ -175,6 +177,7 @@ const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) 
         card.description = textarea?.textContent ?? "";
         
         updateEdit(textarea?.textContent ?? "");
+        updateTask(cardData.id, { description: cardData.description  })
         setIsEdit(false);
     }
 
