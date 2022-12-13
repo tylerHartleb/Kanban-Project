@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Droppable } from 'react-beautiful-dnd';
 import { 
     IonCard, 
@@ -7,7 +7,8 @@ import {
     IonCardHeader, 
     IonCardTitle, 
     IonButton, 
-    IonIcon, 
+    IonIcon,
+    IonPage,
     IonInput, 
     IonItem,
     IonModal,
@@ -17,93 +18,182 @@ import {
     IonToolbar,
     IonList,
     IonLabel,
+    useIonModal
 } from '@ionic/react';
 import {
     IonInputCustomEvent,
     InputChangeEventDetail,
-} from '@ionic/core'
-import { cogOutline } from 'ionicons/icons';
+} from '@ionic/core';
+import { cogOutline, addOutline } from 'ionicons/icons';
+import { OverlayEventDetail } from '@ionic/core/components';
 
 import DraggableCard from "./DraggableCard";
 import { IDroppableGroup } from "../types/KanbanTypes";
 
 import "./DroppableGroup.scss";
+import { Card } from "../classes/Card";
+import { PageContext } from "../pages/MyBoards";
 
 const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
     const [state, updateState] = useState(groupData);
-    const [isOpen, setIsOpen] = useState(false);
-    const modal = useRef<HTMLIonModalElement>(null);
+    const [isCreating, setCreating] = useState(false);
+
+    const presentingElement = useContext(PageContext) as HTMLElement | undefined;
 
     function updateGroupTitle(event: IonInputCustomEvent<InputChangeEventDetail>) {
         const title : string = event.detail.value ?? "";
         state.title = title;
     }
 
-    return (
-        <Droppable
-            droppableId={state.id}
-        >
-            {(provided) => (
-                <div 
-                    className="droppable-group"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                >
-                    <IonCard className="task-list">
+    function createCard(event: IonInputCustomEvent<FocusEvent>) {
+        const relatedTarget = event.detail.relatedTarget as Element;
+        if (relatedTarget?.id == "cancel-add") {
+            setCreating(false);
+        }
+
+        const title = event.target.value as string
+        
+        if (title) {
+            const templateCard = new Card(Math.random().toString(), title);
+            groupData.cards.push(templateCard);
+        } 
+        
+        setCreating(false);
+    }
+
+    function renderCreateCard() {
+        if (isCreating) {
+            return (
+                <>
+                    <IonCard className="task-create">
                         <IonCardHeader>
                             <IonCardTitle>
-                                <IonItem className="title">
+                                <IonItem className="create-title">
                                     <IonInput
+                                        autofocus={true}
                                         className="title-input"
-                                        value={state.title}
-                                        onIonChange={updateGroupTitle}
+                                        placeholder="Enter a title for this task..."
+                                        onIonBlur={createCard}
                                         debounce={250}
                                         inputMode="text"
                                     />
                                 </IonItem>
-                                 <IonButton className="edit-card" fill="clear" onClick={() => setIsOpen(true)}>
-                                    <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
-                                </IonButton>
                             </IonCardTitle>
                         </IonCardHeader>
-                        <IonCardContent>
-                            <div className="droppable-group__content">
-                                {(state.cards.map((card, index) => {
-                                    return (
-                                        <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} />
-                                    )
-                                }))}
-                                {provided.placeholder}
-                            </div>
-                        </IonCardContent>
                     </IonCard>
-                    <IonModal ref={modal} isOpen={isOpen}>
-                        <IonHeader>
-                            <IonToolbar>
-                                <IonTitle>List Actions</IonTitle>
-                                <IonButtons slot="end">
-                                    <IonButton onClick={() => setIsOpen(false)}>Close</IonButton>
-                                </IonButtons>
-                            </IonToolbar>
-                        </IonHeader>
-                        <IonContent className="modal-content">
-                            <IonList>
-                                <IonItem className="title-input">
-                                    <IonLabel position="stacked">Title</IonLabel>
-                                    <IonInput 
-                                        onIonChange={updateGroupTitle}
-                                        debounce={250}
-                                        inputMode="text"
-                                        value={state.title}
-                                    />
-                                </IonItem>
-                            </IonList>
-                        </IonContent>
-                    </IonModal>
-                </div>
-            )}
-        </Droppable>
+                    <div className="add-actions">
+                        <IonButton id="add-task">Add task</IonButton>
+                        <IonButton id="cancel-add" fill="clear">Cancel</IonButton>
+                    </div>
+                </>
+            )
+        } else {
+            return (
+                <IonButton 
+                    fill="clear"
+                    onClick={() => setCreating(true)}
+                >
+                    <IonIcon slot="start" icon={addOutline}></IonIcon>
+                    Add a task
+                </IonButton>
+            )
+        }
+    }
+
+    const [present, dismiss] = useIonModal(GroupModal, {
+        onDismiss: (data: string, role: string) => dismiss(data, role),
+        title: state.title
+      });
+
+    function openModal() {
+    present({
+        onWillDismiss: (ev: CustomEvent<OverlayEventDetail>) => {
+        if (ev.detail.data != "") {
+            state.title = ev.detail.data;
+        }
+        },
+        presentingElement: presentingElement,
+    });
+    }
+
+    return (
+        <>
+            <Droppable
+                droppableId={state.id}
+            >
+                {(provided) => (
+                    <div 
+                        className="droppable-group"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    >
+                        <IonCard className="task-list">
+                            <IonCardHeader>
+                                <IonCardTitle>
+                                    <IonItem className="title">
+                                        <IonInput
+                                            className="title-input"
+                                            value={state.title}
+                                            onIonChange={updateGroupTitle}
+                                            debounce={250}
+                                            inputMode="text"
+                                        />
+                                    </IonItem>
+                                    <IonButton className="edit-card" fill="clear" onClick={openModal}>
+                                        <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
+                                    </IonButton>
+                                </IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <div className="droppable-group__content">
+                                    {(state.cards.map((card, index) => {
+                                        return(
+                                            <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} />
+                                        )
+                                    }))}
+                                    {provided.placeholder}
+                                </div>
+                                { renderCreateCard() }
+                            </IonCardContent>
+                        </IonCard>
+                    </div>
+                )}
+            </Droppable>
+        </> 
     );
 }
+
+interface GroupModalProps {
+    onDismiss: (data: string | number) => void,
+    title: string
+}
+
+const GroupModal: React.FC<GroupModalProps> = ({ onDismiss, title }) => {
+    const inputRef = useRef<HTMLIonInputElement>(null);
+    return (
+      <IonPage>
+        <IonHeader>
+            <IonToolbar>
+                <IonTitle>List Actions</IonTitle>
+                <IonButtons slot="end">
+                    <IonButton onClick={() => onDismiss(inputRef.current?.value ?? "")}>Close</IonButton>
+                </IonButtons>
+            </IonToolbar>
+        </IonHeader>
+        <IonContent className="modal-content">
+            <IonList>
+                <IonItem className="title-input">
+                    <IonLabel position="stacked">Title</IonLabel>
+                    <IonInput
+                        ref={inputRef}
+                        inputMode="text"
+                        value={title}
+                    />
+                </IonItem>
+            </IonList>
+        </IonContent>
+      </IonPage>
+    );
+};
 
 export default DroppableGroup;

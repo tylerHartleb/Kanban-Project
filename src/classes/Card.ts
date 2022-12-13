@@ -1,3 +1,5 @@
+import { Members } from "./Members";
+
 export class Cards extends Array<Card> {
     /* Constructor overloads */
     constructor(size?: number | undefined);
@@ -28,6 +30,7 @@ export class Cards extends Array<Card> {
 export class Card implements ICardData {
     id: string;
     title: string;
+    members: Members = [];
     // Temp going to make this use markdown
     private _description: string = "";
 
@@ -55,7 +58,8 @@ export class Card implements ICardData {
         return {
             id: this.id,
             title: this.title,
-            description: this.description
+            description: this.description,
+            members: this.members
         };
     }
 
@@ -68,7 +72,8 @@ export class Card implements ICardData {
 export interface ICardData {
     id: string,
     title: string,
-    description: string
+    description: string,
+    members: Members
 }
 
 type CardTuple = [id: string, title: string, description: string];
