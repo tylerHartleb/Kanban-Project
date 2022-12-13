@@ -92,10 +92,13 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
 
     function sendInvites(data: any) {
         const emails = data[0];
-        const paramData = {
-            emails: emails
-        }
-        inviteToBoard(id, paramData);
+        const constEmailList = emails.trim().split(/\s+/);
+
+        Promise.all(
+            constEmailList.map(async (collab: any) => {
+                return userActionAPI.inviteCollaborator(id, { email: collab});
+            })
+        )
     }
 
     function getGroupItems(id: String): Cards {
