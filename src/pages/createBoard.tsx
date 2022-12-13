@@ -31,6 +31,9 @@ const CreateBoard: React.FC = () => {
   const [collabName, setCollabName]= useState("");
   const [errMsg1, setErrMsg1] = useState(""); //For the board Field
   const [errMsg2, setErrMsg2] = useState(""); //For the collab field
+  const [boardCreated, setBoardCreated] = useState(false); //Check if board has been created - for invite collab functonality
+  const [sucessMsg1, setSuccessMsg1]=useState("");
+  const [sucessMsg2, setSuccessMsg2]=useState("");
 
   const createBoard = async () => {
     let isValid = true;
@@ -44,12 +47,32 @@ const CreateBoard: React.FC = () => {
     if (!isValid) return;
 
     try {
-      const response = await userActionAPI.createBoard({boardName:boardName});
-      console.log(response)
-      const data = await response.json();
+      //First create the board
+      const data = await userActionAPI.createBoard({boardName:boardName});
       console.log(data)
-    } catch (err:any) {
-      setErrMsg2(err.message)
+      const boardId=data._id;
+      setBoardCreated(true);
+      //And then invite collabs to it
+      setSuccessMsg1("Board Sucessfully created!");
+      try{
+        if (collabName.trim()!=""){
+          const data1= await userActionAPI.inviteCollaborator(boardId, {email: collabName });
+          setSuccessMsg2("Collaborator invited!");
+        }
+      }
+      catch (err1:any) {
+
+        setErrMsg2(err1.message)
+      }
+      
+      
+      
+
+      
+    } 
+    catch (err:any) {
+
+      setErrMsg1(err.message)
     }
   };
 
@@ -82,7 +105,7 @@ const CreateBoard: React.FC = () => {
             <IonRow class="ion-justify-content-center ion-align-items-center">
                       <IonCol>
                         <IonItem className={`${errMsg2==="" && 'ion-valid'} ${errMsg2!=="" && 'ion-invalid'}`}>
-                            <IonLabel position="floating">Invite Collaborators:</IonLabel>
+                            <IonLabel position="floating">Invite Collaborator:</IonLabel>
                             <IonInput onIonInput={(e:any)=>{setCollabName(e.target.value);}}></IonInput>
                             <IonNote slot="error">{errMsg2}</IonNote>
                         </IonItem>

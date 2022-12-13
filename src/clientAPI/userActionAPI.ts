@@ -55,6 +55,19 @@ const requestOptionsPost = {
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
+
+    //Takes in email in parmas
+    inviteCollaborator: async (boardId:any, param:any) => {
+      let temp =JSON.stringify(param);
+      requestOptionsPost.body=temp;
+      setToken();
+      const response = await fetch(`http://localhost:5000/api/boards/invite/${boardId}`, requestOptionsPost);
+      const data = await response.json();
+      console.log(response);
+      console.log(data);
+      if (response.ok==false) {throw new Error(data.message)};
+      return data;
+    },
     getUserInfo: async () => {
       // let temp=param;
       setToken();
