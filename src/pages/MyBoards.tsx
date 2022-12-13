@@ -51,10 +51,7 @@ import { getBoards } from "../clientAPI/boardActionAPI";
 
 // #region dummy data
 
-const projects: Project[] = [];
-
-
-for (let i = 0; i < 15; i++) {
+/* for (let i = 0; i < 15; i++) {
   const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
   const group = new Group("group-1", "group1");
   group.cards = cards;
@@ -62,7 +59,7 @@ for (let i = 0; i < 15; i++) {
   const project = new Project(`SENG513-${i}`);
   project.groups.push(group);
   projects.push(project)
-}
+} */
 // #endregion
 
 export const PageContext = createContext(null as HTMLElement | null);
@@ -76,9 +73,8 @@ const MyBoards: React.FC = () => {
 };
 
 const MyBoardsPage: React.FC = () => {
-
-  const [boards, setBoards] = useState(projects);
-  const [results, setResults] = useState(boards);
+  const [boards, setBoards] = useState([] as Project[]);
+  const [results, setResults] = useState([] as Project[]);
 
   // #region Handlers
   const handleSearch = (ev: Event) => {
@@ -87,7 +83,7 @@ const MyBoardsPage: React.FC = () => {
     if (target) query = target.value!.toLowerCase();
     console.log(query)
 
-    setResults(projects.filter(({ title }) => title.toLowerCase().indexOf(query) > -1));
+    setResults(boards.filter(({ title }) => title.toLowerCase().indexOf(query) > -1));
   }
 
   const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -98,9 +94,14 @@ const MyBoardsPage: React.FC = () => {
   }
 
   const fetchData = useCallback(async () => {
-    const data = await getBoards() as Project[];
+    const data = await getBoards();
+
+    const boards: Project[] = data.map((board: { _id: string; title: string; owner: string; __v: number }) => {
+      return new Project(board._id, board.title, board.owner);
+    });
   
-    //setBoards(data);
+    setBoards(boards);
+    setResults(boards);
   }, [])
 
   // #region Hooks
@@ -136,7 +137,7 @@ const MyBoardsPage: React.FC = () => {
               data-search={project.title} 
               routerDirection="forward"
               key={index}
-              component={() => <ProjectBoard title={project.title} groups={project.groups} members={project.members} />}
+              component={() => <ProjectBoard id={project.id} title={project.title} groups={project.groups} owner={project.owner} />}
             >
               <IonCard button={true}>
                 <IonCardHeader>

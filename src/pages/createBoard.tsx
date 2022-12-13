@@ -63,7 +63,7 @@ const CreateBoard: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-      <IonHeader collapse="condense">
+        <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Create New Board</IonTitle>
           </IonToolbar>

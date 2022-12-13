@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import {
     IonContent,
@@ -7,21 +7,29 @@ import {
     IonToolbar,
     IonButtons,
     IonBackButton,
-    IonPage
+    IonPage,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonIcon,
+    IonInput
 } from '@ionic/react';
+import { cogOutline, addOutline } from 'ionicons/icons';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
 import { Cards, Group, IProject } from "../classes/KanbanClasses";
+import { addGroup, getGroups } from "../clientAPI/boardActionAPI";
 
 import "./ProjectBoard.scss";
 
-const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
-    const [state, updateState] = useState(groups);
+const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
+    const [groups, updateGroups] = useState([] as Group[]);
+    const [isAdding, setIsAdding] = useState(false);
 
     function getGroupItems(id: String): Cards {
-        const result = state.find(group => group.id === id)?.cards ?? [];
+        const result = groups.find(group => group.id === id)?.cards ?? [];
         console.log(result)
         return result;
     }
@@ -37,10 +45,10 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
                 source.index,
                 destination.index
             )
-            const updatedState = [ ...state ];
+            const updatedState = [ ...groups ];
             const groupToUpdate = updatedState.find(group => group.id === destination.droppableId);
             if (groupToUpdate) groupToUpdate.cards = cards;
-            updateState(updatedState);
+            updateGroups(updatedState);
         } else {
                 const sourceClone = getGroupItems(source.droppableId);
                 const destClone = getGroupItems(destination.droppableId);
@@ -48,35 +56,86 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
               
                 destClone.splice(destination.index, 0, removed);
 
-                const updatedState = [ ...state ];
+                const updatedState = [ ...groups ];
                 const sourceToUpdate = updatedState.find(group => group.id === source.droppableId);
                 const destToUpdate = updatedState.find(group => group.id === destination.droppableId);
 
                 if (sourceToUpdate) sourceToUpdate.cards = sourceClone;
                 if (destToUpdate) destToUpdate.cards = destClone;
-                updateState(updatedState);
+                updateGroups(updatedState);
         }
-    } 
+    }
+
+    function cancelChanges() {
+        setIsAdding(false);
+    }
+
+    async function saveChanges() {
+        const textarea = document.getElementById("edit-textinput") as HTMLInputElement;
+        const groupTitle = textarea?.value ?? "";
+        
+        const response = await addGroup(id , {  groupTitle: groupTitle});
+        console.log(response);
+
+        await fetchData();
+        
+        setIsAdding(false);
+    }
+
+    const fetchData = useCallback(async () => {
+        const data = await getGroups(id);
+    
+        const groups: Group[] = data.map((group: { _id: string; title: string; }) => {
+          return new Group(group._id, group.title);
+        });
+
+        updateGroups(groups);
+      }, [])
+    
+      // #region Hooks
+      useEffect(() => {
+        fetchData().catch();
+      }, []);
+      // #endregion
 
     return (
         <>
             <IonHeader>
                 <IonToolbar>
-                <IonButtons slot="start">
-                    <IonBackButton></IonBackButton>
-                </IonButtons>
-                <IonTitle>{ title }</IonTitle>
+                    <IonButtons slot="start">
+                        <IonBackButton></IonBackButton>
+                    </IonButtons>
+                    <IonTitle>{ title }</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton fill="clear" onClick={() => setIsAdding(true)}>
+                            <IonIcon slot="icon-only" icon={addOutline}></IonIcon>
+                        </IonButton>
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="project-board">
                 <DragDropContext onDragEnd={handleOnDragEnd}>
                     <div className="board-content">
-                        {state.map((group) => {
+                        {groups.map((group) => {
                             return (
                                 <DroppableGroup groupData={group} key={group.id} />
                             )
                         })}
                     </div>
+                    { isAdding ?
+                        <div className="card-modal__desc-edit">
+                            <IonInput
+                                id="edit-textinput"
+                                autofocus={true}
+                                placeholder="Set new group title"
+                            />
+                            <div className="desc-edit__btns">
+                                <IonButton onClick={() => saveChanges()} >Save</IonButton>
+                                <IonButton onClick={() => cancelChanges()} fill="clear">Cancel</IonButton>
+                            </div>
+                        </div>
+                        : null 
+                    }
                 </DragDropContext>
             </IonContent>
         </>
