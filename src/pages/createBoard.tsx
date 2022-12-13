@@ -95,35 +95,34 @@ const CreateBoard: React.FC = () => {
     let emailList= emailSplitter(collabName);
     console.log("EmailList", emailList);
     let errorIndex=[];
-    console.log(emailList.length);
+    // console.log(emailList.length);
       
       for (let i=0; i<emailList.length;){
 
         try{
-          console.log(emailList[i]);
-          let data1= await userActionAPI.inviteCollaborator(boardId, {email: emailList[i] });
+          // console.log(emailList[i]);
+          let email=emailList[i];
+          let data1= await userActionAPI.inviteCollaborator(boardId, {email: email });
           i++;
-          console.log(data1);
+          // console.log(data1);
         }
         catch (err1:any) {
           errorIndex.push(i);
-          console.log(err1);
+          // console.log(err1);
           i++;
           continue;
         }
         
       }
-      
+
     console.log(errorIndex);
-    // try{
-    //   const data1= await userActionAPI.inviteCollaborator(boardId, {email: emailList[0] });
-    //   console.log(data1);
-
-    // }
-
-    // catch (err1:any){
-    //   console.log(err1);
-    // }
+    // console.log(errorIndex);
+    //For every failure grab the failure and customize the msg 
+    
+    // let err2= 
+    // UpdateErrorSucess(err1:"", err2:"", succ1:"", succ2: "" )
+    
+ 
     
   }
 

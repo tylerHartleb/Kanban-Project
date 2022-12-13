@@ -60,14 +60,12 @@ const requestOptionsPost = {
     inviteCollaborator: async (boardId:any, param:any) => {
       let temp =JSON.stringify(param);
       console.log("Params passed: ", temp);
-      console.log(boardId);
       requestOptionsPost.body=temp;
       setToken();
       const response = await fetch(`http://localhost:5000/api/boards/invite/${boardId}`, requestOptionsPost);
-      console.log(response);
       const data = await response.json();
-      console.log(response);
-      console.log(data);
+      console.log("Response:", response);
+      console.log("Data", data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
