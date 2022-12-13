@@ -5,6 +5,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonIcon,
   IonCol,
   IonContent,
   IonFooter,
@@ -30,6 +31,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { RefresherEventDetail } from "@ionic/core"
+import { trashOutline } from 'ionicons/icons';
 import { useEffect, useState, useRef, createContext, useCallback } from "react";
 
 // #region Classes & Types
@@ -47,20 +49,8 @@ import "./MyBoards.scss";
 import ProjectBoard from "../components/ProjectBoard";
 // #endregion
 
-import { getBoards } from "../clientAPI/boardActionAPI";
-
-// #region dummy data
-
-/* for (let i = 0; i < 15; i++) {
-  const cards = new Cards([new Card("card1", "card1"), new Card("card2", "card2")])
-  const group = new Group("group-1", "group1");
-  group.cards = cards;
-
-  const project = new Project(`SENG513-${i}`);
-  project.groups.push(group);
-  projects.push(project)
-} */
-// #endregion
+import { getBoards, deleteBoard } from "../clientAPI/boardActionAPI";
+import userActionAPI from "../clientAPI/userActionAPI";
 
 export const PageContext = createContext(null as HTMLElement | null);
 
@@ -75,6 +65,7 @@ const MyBoards: React.FC = () => {
 const MyBoardsPage: React.FC = () => {
   const [boards, setBoards] = useState([] as Project[]);
   const [results, setResults] = useState([] as Project[]);
+  const [user, setUser] = useState({} as any);
 
   // #region Handlers
   const handleSearch = (ev: Event) => {
@@ -93,14 +84,24 @@ const MyBoardsPage: React.FC = () => {
     }, 2000);
   }
 
+  const deleteSelBoard = (id: string) => {
+    deleteBoard(id);
+    const nav = document.querySelector('ion-nav');
+    const newBoards = boards.filter(board => (board.id != id));
+    setBoards(newBoards);
+    setResults(newBoards);
+    nav?.pop();
+  }
+
   const fetchData = useCallback(async () => {
     const data = await getBoards();
-
+    const userData = await userActionAPI.getUserInfo();
     const boards: Project[] = data.map((board: { _id: string; title: string; owner: string; __v: number }) => {
       return new Project(board._id, board.title, board.owner);
     });
   
     setBoards(boards);
+    setUser(userData);
     setResults(boards);
   }, [])
 
@@ -137,10 +138,10 @@ const MyBoardsPage: React.FC = () => {
               data-search={project.title} 
               routerDirection="forward"
               key={index}
-              component={() => <ProjectBoard id={project.id} title={project.title} groups={project.groups} owner={project.owner} />}
+              component={() => <ProjectBoard id={project.id} title={project.title} groups={project.groups} owner={project.owner} deleteSelBoard={deleteSelBoard} />}
             >
               <IonCard button={true}>
-                <IonCardHeader>
+                <IonCardHeader className="board-header">
                   <IonCardTitle>{project.title}</IonCardTitle>
                 </IonCardHeader>
               </IonCard>

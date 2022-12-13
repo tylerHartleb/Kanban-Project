@@ -12,8 +12,13 @@ import {
     IonCard,
     IonCardContent,
     IonIcon,
-    IonInput
+    IonInput,
+    useIonActionSheet,
+    IonNavLink
 } from '@ionic/react';
+import { 
+    OverlayEventDetail,
+} from '@ionic/core';
 import { cogOutline, addOutline } from 'ionicons/icons';
 /* Import Custom components/types */
 import DroppableGroup from "./DroppableGroup";
@@ -21,13 +26,30 @@ import DroppableGroup from "./DroppableGroup";
 import { reorder } from '../scripts/movement-utils';
 import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
 import { addGroup, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
+import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
 import { getDefaultNormalizer } from "@testing-library/react";
 
-const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
+const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
     const [groups, updateGroups] = useState([] as Group[]);
     const [isAdding, setIsAdding] = useState(false);
+    const [user, setUser] = useState({} as any);
+
+    const [present] = useIonActionSheet();
+    const callAction = (detail: OverlayEventDetail) => {
+        const actionToCall = detail.data.action;
+        
+        if (actionToCall == "add") {
+            setIsAdding(true);
+        } else if (actionToCall == 'delete') {
+            deleteGroup();
+        }
+    }
+
+    function deleteGroup() {
+        deleteSelBoard(id);
+    }
 
     function getGroupItems(id: String): Cards {
         const result = groups.find(group => group.id === id)?.cards ?? [];
@@ -98,6 +120,7 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
 
     const fetchData = useCallback(async () => {
         const data = await getGroups(id);
+        const userData = await userActionAPI.getUserInfo();
     
         const groups: Group[] = data.map((group: { _id: string; title: string; }) => {
           return new Group(group._id, group.title);
@@ -116,6 +139,7 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
                 return group;
             })
         ).then(() => {
+            setUser(userData)
             updateGroups(groups)
         })
       }, [])
@@ -135,8 +159,42 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner }) => {
                     </IonButtons>
                     <IonTitle>{ title }</IonTitle>
                     <IonButtons slot="end">
-                        <IonButton fill="clear" onClick={() => setIsAdding(true)}>
-                            <IonIcon slot="icon-only" icon={addOutline}></IonIcon>
+                        <IonButton 
+                            fill="clear"
+                            onClick={() => {
+                                const buttons = []
+
+                                if (owner == user.id) buttons.push({
+                                    text: 'Delete',
+                                    role: 'destructive',
+                                    data: {
+                                        action: 'delete',
+                                    },
+                                })
+
+                                buttons.push({
+                                    text: 'Add Task List',
+                                    data: {
+                                        action: 'add',
+                                    },
+                                })
+
+                                buttons.push({
+                                    text: 'Cancel',
+                                    role: 'cancel',
+                                    data: {
+                                        action: 'cancel',
+                                    },
+                                })
+
+                                present({
+                                    header: `${title}`,
+                                    buttons: buttons,
+                                    onDidDismiss: ({ detail }) => callAction(detail),
+                                })
+                            }} 
+                        >
+                            <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>

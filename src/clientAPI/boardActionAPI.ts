@@ -39,6 +39,14 @@ export async function getBoards() {
     return data;
 }
 
+export async function deleteBoard(id: string) {
+    setToken();
+    const response = await fetch(`http://localhost:5000/api/boards/${id}`, requestOptionsDelete);
+    const data= await response.json();
+    if (response.ok==false) {throw new Error(data.message)};
+    return data;
+}
+
 export async function getGroups(id: string) {
     setToken();
     const response = await fetch(`http://localhost:5000/api/taskLists/collections/${id}`, requestOptionsGet);
@@ -62,6 +70,15 @@ export async function getTasks(id: string) {
     setToken();
     const response = await fetch(`http://localhost:5000/api/tasks/collections/${id}`, requestOptionsGet);
     const data= await response.json();
+    if (response.ok==false) {throw new Error(data.message)};
+    return data;
+}
+
+export async function updateTaskList(id: string, params: any) {
+    setToken();
+    const postData = { ...requestOptionsPut, body: JSON.stringify(params) }
+    const response = await fetch(`http://localhost:5000/api/taskLists/${id}`, postData);
+    const data = await response.json();
     if (response.ok==false) {throw new Error(data.message)};
     return data;
 }

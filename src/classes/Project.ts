@@ -5,13 +5,14 @@ export interface IProject {
     title: string,
     id: string,
     groups: Group[],
-    owner: string
+    owner: string,
+    deleteSelBoard: (id: string) => void
 }
 
 export interface IProjectData {
     title: string,
     id: string,
-    owner: string
+    owner: string,
 }
 
 export class Project {

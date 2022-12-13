@@ -35,7 +35,7 @@ import userActionAPI from "../clientAPI/userActionAPI";
 import "./DroppableGroup.scss";
 import { Card } from "../classes/Card";
 
-import { createTask } from "../clientAPI/boardActionAPI";
+import { createTask, updateTaskList } from "../clientAPI/boardActionAPI";
 
 //create your forceUpdate hook
 function useForceUpdate(){
@@ -64,6 +64,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
     function updateGroupTitle(event: IonInputCustomEvent<InputChangeEventDetail>) {
         const title : string = event.detail.value ?? "";
         state.title = title;
+        updateTaskList(state.id, {title: state.title});
     }
 
     async function createCard(event: IonInputCustomEvent<FocusEvent>) {
@@ -170,7 +171,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
                                             inputMode="text"
                                         />
                                     </IonItem>
-                                    <IonButton className="edit-card" fill="clear" onClick={openModal}>
+                                    <IonButton className="delete-board" fill="clear" onClick={openModal}>
                                         <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
                                     </IonButton>
                                 </IonCardTitle>
