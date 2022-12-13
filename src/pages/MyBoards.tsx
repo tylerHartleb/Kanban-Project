@@ -76,30 +76,33 @@ projects.push(project2)
 export const PageContext = createContext(null as HTMLElement | null);
 
 const MyBoards: React.FC = () => {
-  const page = useRef(null);
-  const [presentingElement, setPresentingElement] = useState<HTMLElement | null>(null);
+  // const page = useRef(null);
+  // const [presentingElement, setPresentingElement] = useState<HTMLElement | null>(null);
 
   
   
   
 
-  // #region Effects
-  useEffect(() => {
-    setPresentingElement(page.current);
-  }, []);
+  // // #region Effects
+  // useEffect(() => {
+  //   setPresentingElement(page.current);
+  // }, []);
   // #endregion
 
   return (
-    <IonPage ref={page}>
-      <PageContext.Provider value={presentingElement}>
+    // <IonPage ref={page}>
+    //   <PageContext.Provider value={presentingElement}>
         <IonNav root={() => <MyBoardsPage />} />
-      </PageContext.Provider>
-    </IonPage>
+    //   </PageContext.Provider>
+    // </IonPage>
   );
 };
 
 const MyBoardsPage: React.FC = () => {
   const [results, setResults] = useState([...projects]);
+  // useEffect(()=>{
+  //   console.log("hello from your boards")
+  // }, [])
 
   // #region Handlers
   const handleSearch = (ev: Event) => {
