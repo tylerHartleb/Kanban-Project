@@ -14,7 +14,8 @@ import {
     IonIcon,
     IonInput,
     useIonActionSheet,
-    IonNavLink
+    IonNavLink,
+    useIonAlert
 } from '@ionic/react';
 import { 
     OverlayEventDetail,
@@ -25,7 +26,7 @@ import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
 import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
-import { addGroup, deleteTaskList, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
+import { addGroup, deleteTaskList, getGroups, getTasks, updateTask, inviteToBoard } from "../clientAPI/boardActionAPI";
 import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
@@ -45,8 +46,12 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
             setIsAdding(true);
         } else if (actionToCall == 'delete') {
             deleteBoard();
+        } else if (actionToCall == 'invite') {
+            inviteMember();
         }
     }
+
+    const [presentAlert] = useIonAlert()
 
     function deleteBoard() {
         deleteSelBoard(id);
@@ -59,6 +64,38 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
         })
 
         updateGroups(newGroups);
+    }
+
+    function inviteMember() {
+        presentAlert({
+            header: 'Invite members to board',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Invite',
+                    role: 'confirm',
+                    handler: (alertData) => {
+                        sendInvites(alertData);
+                    },
+                }, 
+            ],
+            inputs: [
+                {
+                    placeholder: "Add member emails"
+                }
+            ]
+        })
+    }
+
+    function sendInvites(data: any) {
+        const emails = data[0];
+        const paramData = {
+            emails: emails
+        }
+        inviteToBoard(id, paramData);
     }
 
     function getGroupItems(id: String): Cards {
@@ -186,6 +223,13 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
                                     text: 'Add Task List',
                                     data: {
                                         action: 'add',
+                                    },
+                                })
+
+                                buttons.push({
+                                    text: 'Invite to project',
+                                    data: {
+                                        action: 'invite',
                                     },
                                 })
 
