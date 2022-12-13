@@ -197,7 +197,7 @@ const CreateAcc: React.FC = () => {
       <IonRow class="ion-justify-content-start ion-align-items-start">
         <IonCol>
           <IonItem lines="none">
-            <IonButton
+            <IonButton size="default"
               onClick={() => {
                 handleCreate();
               }}
