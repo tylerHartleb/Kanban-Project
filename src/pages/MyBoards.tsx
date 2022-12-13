@@ -68,12 +68,15 @@ for (let i = 0; i < 15; i++) {
 export const PageContext = createContext(null as HTMLElement | null);
 
 const MyBoards: React.FC = () => {
+
   return (
     <IonNav root={() => <MyBoardsPage />} />
+
   );
 };
 
 const MyBoardsPage: React.FC = () => {
+
   const [boards, setBoards] = useState(projects);
   const [results, setResults] = useState(boards);
 
