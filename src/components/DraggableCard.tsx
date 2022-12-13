@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { 
+import {
+    IonAvatar,
     IonButton, 
     IonButtons,
     IonCard, 
@@ -17,43 +18,43 @@ import {
     IonItem,
     IonListHeader,
     IonTitle,
+    IonTextarea,
     IonToolbar,
     IonLabel,
     IonMenu,
     useIonActionSheet,
     IonSplitPane,
     IonPage,
-    useIonModal
+    useIonModal,
+    IonItemDivider
     
 } from '@ionic/react';
 import { 
     OverlayEventDetail,
+    IonInputCustomEvent,
+    InputChangeEventDetail,
+    IonTextareaCustomEvent,
+    TextareaChangeEventDetail,
 } from '@ionic/core';
 import { 
     createOutline,
-    personAddOutline,
-    informationOutline,
+    peopleOutline  
 } from 'ionicons/icons';
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 // Custom
 import { IDraggableCard } from '../types/KanbanTypes';
 import { Card, ICardData } from '../classes/KanbanClasses';
 
 import "./DraggableCard.scss";
+import 'katex/dist/katex.min.css'
 import { PageContext } from '../pages/MyBoards';
-
-interface IModalProps {
-    cardData: ICardData,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
 
 // #region Card
 const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index }) => {
-    // Refs
-    const modal = useRef<HTMLIonModalElement>(null);
-    
     // States
     const [state, updateState] = useState(cardData);
 
@@ -62,7 +63,8 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index })
     const [present] = useIonActionSheet();
     const [presentModal, dismiss] = useIonModal(CardModal, {
         onDismiss: () => dismiss(),
-        cardData: state
+        cardData: state,
+        groupTitle: groupName
     });
 
     function openModal() {
@@ -134,8 +136,8 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index })
                         </IonCardHeader>
                         {
                             state.description != "" ? 
-                            <IonCardContent>
-                                { state.description }
+                            <IonCardContent className="card-desc">
+                                <ReactMarkdown children={state.description} remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} />
                             </IonCardContent> : null
                         }
                     </IonCard>
@@ -148,39 +150,38 @@ const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index })
 
 interface CardModalProps {
     cardData: ICardData,
+    groupTitle: string,
     onDismiss: () => void
 }
 
 // #region Modal Content
-const CardModal: React.FC<CardModalProps> = ({cardData, onDismiss}) => {
+const CardModal: React.FC<CardModalProps> = ({cardData, groupTitle, onDismiss}) => {
     const [card, updateCard] = useState(cardData);
+    const [isEdit, setIsEdit] = useState(false);
+    const [edit, updateEdit] = useState(card.description);
 
-    useEffect(() => {
-        const collection: HTMLCollectionOf<Element> = document.getElementsByClassName("list-button");
-        for(var i = 0; i <  collection.length; i++) {
-            const element: Element | null = collection.item(i);
-            if (element != null && element.shadowRoot != null) {
-                element.shadowRoot?.querySelector('.button-inner')?.setAttribute('justifyContent', 'flex-start');
+    function saveChanges() {
+        const textarea = document.getElementById("edit-textarea");
+        card.description = textarea?.textContent ?? "";
+        
+        updateEdit(textarea?.textContent ?? "");
+        setIsEdit(false);
+    }
 
-                const sheet = new CSSStyleSheet();
-                sheet.replaceSync(`.button-inner { justify-content: flex-start; padding-left: 4px;}`);
-
-                const elemStyleSheets = element.shadowRoot.adoptedStyleSheets;
-                console.log(elemStyleSheets)
-                console.log(sheet)
-
-                element.shadowRoot.adoptedStyleSheets = [...elemStyleSheets, sheet];
-            }  
+    function cancelChanges() {
+        if (edit != card.description) {
+            updateEdit(card.description);
         }
-    }, []);
+
+        setIsEdit(false);
+    }
 
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>
-                        {card.title}
-                        {/* <IonTitle size="small">In list {groupTitle}</IonTitle> */}
+                        {groupTitle}
                     </IonTitle>
                     <IonButtons slot="end">
                         <IonButton fill="clear" onClick={() => onDismiss()}>Close</IonButton>
@@ -189,33 +190,58 @@ const CardModal: React.FC<CardModalProps> = ({cardData, onDismiss}) => {
             </IonHeader>
             <IonContent className="card-modal">
                 <div className="card-modal__content">
-                    <div className="card-modal__main">
-                        <section className="description-section">
-                            <h5 className="section-title">Description</h5>
+                    <h1 className="card-modal__title">{ card.title }</h1>
+                    <div className="card-modal__info">
+                        <section className="card-modal__section">
+                            <IonItem class="card-label" lines='none'>
+                                <IonIcon icon={peopleOutline} slot="start" />
+                                <IonLabel>{"Member(s)"}</IonLabel>
+                            </IonItem>
 
-                            <div className="description">
+                            {card.members.length > 0 ?
+                                <div className="card-modal__members">
+                                    {card.members.map((member, index) => (
+                                        <IonItem lines='none' key={index} >
+                                            <IonAvatar slot="start">
+                                                <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                                            </IonAvatar>
+                                            <IonLabel>
+                                                { member.username }
+                                            </IonLabel>
+                                        </IonItem>
+                                    ))}
+                                </div>
+                            : null}
 
-                            </div>
-                        </section> 
+                            <IonButton fill="outline" size="small">Add members</IonButton>
+                        </section>
                     </div>
-
-                    <section className="card-modal__sidebar">
-                        <IonList className="buttons-list">
-                            <IonListHeader className="list-title">Add to card</IonListHeader>
-                            <IonButton className="list-button" size='small' color="light">
-                                <IonIcon size='small' slot="start" icon={personAddOutline} />
-                                Add Members
-                            </IonButton>
-                            <IonButton className="list-button" size='small' color="light">
-                                <IonIcon size='small' slot="start" icon={personAddOutline} />
-                                Check list
-                            </IonButton>
-                        </IonList>
-
-                        <IonList className="actions-list">
-                            <IonListHeader className="list-title">Actions</IonListHeader>
-                        </IonList>
-                    </section>
+                    <IonItem>
+                        <IonLabel color="medium">{ "Description" }</IonLabel>
+                        <IonButtons slot='end'>
+                            <IonButton onClick={() => setIsEdit(true)} color="medium" fill="clear" size='small'>Edit</IonButton>
+                        </IonButtons>
+                    </IonItem>
+                    <div className="card-modal__desc">
+                        <section>
+                            {isEdit ?
+                                <div className="card-modal__desc-edit">
+                                    <IonTextarea
+                                        id="edit-textarea"
+                                        autoGrow={true}
+                                        autofocus={true}
+                                        placeholder="Type something here"
+                                        value={card.description}
+                                    />
+                                    <div className="desc-edit__btns">
+                                        <IonButton onClick={() => saveChanges()} >Save</IonButton>
+                                        <IonButton onClick={() => cancelChanges()} fill="clear">Cancel</IonButton>
+                                    </div>
+                                </div> :
+                                <ReactMarkdown children={card.description} remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} />
+                            }         
+                        </section>                                       
+                    </div>
                 </div>
             </IonContent>
         </IonPage>

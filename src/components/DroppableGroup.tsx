@@ -23,7 +23,7 @@ import {
 import {
     IonInputCustomEvent,
     InputChangeEventDetail,
-} from '@ionic/core'
+} from '@ionic/core';
 import { cogOutline, addOutline } from 'ionicons/icons';
 import { OverlayEventDetail } from '@ionic/core/components';
 
@@ -36,7 +36,6 @@ import { PageContext } from "../pages/MyBoards";
 
 const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
     const [state, updateState] = useState(groupData);
-    const [isOpen, setIsOpen] = useState(false);
     const [isCreating, setCreating] = useState(false);
 
     const presentingElement = useContext(PageContext) as HTMLElement | undefined;
@@ -154,7 +153,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
                                     }))}
                                     {provided.placeholder}
                                 </div>
-                                { /*renderCreateCard()*/ }
+                                { renderCreateCard() }
                             </IonCardContent>
                         </IonCard>
                     </div>

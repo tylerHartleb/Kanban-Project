@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import {
     IonContent,
@@ -16,7 +16,6 @@ import { reorder } from '../scripts/movement-utils';
 import { Cards, Group, IProject } from "../classes/KanbanClasses";
 
 import "./ProjectBoard.scss";
-import { group } from "console";
 
 const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
     const [state, updateState] = useState(groups);
@@ -43,12 +42,21 @@ const ProjectBoard: React.FC<IProject> = ({ title, groups, members }) => {
             if (groupToUpdate) groupToUpdate.cards = cards;
             updateState(updatedState);
         } else {
-            console.log('Implement move between list object')
-        }
-    }
+                const sourceClone = getGroupItems(source.droppableId);
+                const destClone = getGroupItems(destination.droppableId);
+                const [ removed ] = sourceClone.splice(source.index, 1);
+              
+                destClone.splice(destination.index, 0, removed);
 
-    const page = useRef(undefined);
-    const [presentingElement, setPresentingElement] = useState<HTMLIonContentElement | undefined>(undefined);
+                const updatedState = [ ...state ];
+                const sourceToUpdate = updatedState.find(group => group.id === source.droppableId);
+                const destToUpdate = updatedState.find(group => group.id === destination.droppableId);
+
+                if (sourceToUpdate) sourceToUpdate.cards = sourceClone;
+                if (destToUpdate) destToUpdate.cards = destClone;
+                updateState(updatedState);
+        }
+    } 
 
     return (
         <>
