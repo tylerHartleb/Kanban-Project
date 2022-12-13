@@ -19,6 +19,9 @@ const userAuthAPI = {
       requestOptionsPost.body=temp;
       const response= await fetch("http://localhost:5000/api/users/", requestOptionsPost);
       const data= await response.json();
+      console.log(response);
+      console.log(data);
+      
       if (response.ok==false) {throw new Error(data.message)};
       return data;
       

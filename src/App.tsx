@@ -60,7 +60,7 @@ import { useEffect, useState } from "react";
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     console.log("Rendered Main APP");
