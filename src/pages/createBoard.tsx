@@ -46,7 +46,10 @@ const CreateBoard: React.FC = () => {
       const response = await userActionAPI.createBoard({boardName:boardName});
       const data = await response.json();
 
-    } catch (err) {}
+    } catch (err:any) {
+
+      setErrMsg2(err.message)
+    }
   };
 
   return (

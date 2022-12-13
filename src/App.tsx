@@ -63,6 +63,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     console.log("Rendered Main APP");
+    if (localStorage.getItem("token")!=null){
+      setLoggedIn(true);
+    }
   }, []);
 
   return (
@@ -81,7 +84,7 @@ const App: React.FC = () => {
               </Route>
               <Route exact path="/MyAccount">
                 <IonContent>
-                  <MyAccount />
+                  <MyAccount changeLogin={(setTo:boolean)=>{setLoggedIn(setTo)}} />
                 </IonContent>
               </Route>
               <Route exact path="/">
@@ -118,7 +121,7 @@ const App: React.FC = () => {
               <IonRouterOutlet>
                 <Route exact path="/LoginPage">
                   <IonContent>
-                    <LoginPage />
+                    <LoginPage props={(setTo:boolean)=>{setLoggedIn(setTo)}}/>
                   </IonContent>
                 </Route>
                 <Route exact path="/CreateAcc">
