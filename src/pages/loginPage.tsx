@@ -21,7 +21,7 @@ import { useHistory } from "react-router";
 import "./loginPage.css"
 
 
-const LoginPage: React.FC = () => {
+const LoginPage: React.FC<any> = (props:any) => {
 
   const [userEmail, setUserEmail]=useState("");
   const [userPass, setUserPass]=useState("");
@@ -52,6 +52,9 @@ const LoginPage: React.FC = () => {
 
       const data= await userAuthAPI.login({email:userEmail, password:userPass});
       localStorage.setItem('token', data.token)
+      console.log(props);
+      props.props(true);
+      history.push("/");
       //Redirect 
       // history.push("/CantLogin"); // Programmaticaly navigate
       //And change is Logged in

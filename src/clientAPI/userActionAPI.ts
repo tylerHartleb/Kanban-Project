@@ -8,13 +8,15 @@ const requestOptionsPost = {
   const requestOptionsGet = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', 'Authorization':'' },
-    body: JSON.stringify("")
   };
 
   const setToken =()=>{
-    let token=JSON.parse(localStorage.getItem("token")!)
-    requestOptionsGet.headers['Authorization']= `Bearer ${token}`
-    requestOptionsPost.headers['Authorization']= `Bearer ${token}`
+    console.log(localStorage.getItem("token"));
+    // let token=JSON.parse(localStorage.getItem("token")!)
+    let token=localStorage.getItem("token");
+    console.log(token);
+    requestOptionsGet.headers['Authorization']= `Bearer ${token}` ;
+    requestOptionsPost.headers['Authorization']= `Bearer ${token}`;
   }
   
   const userActionAPI = {
@@ -24,16 +26,40 @@ const requestOptionsPost = {
       // let temp=param;
       requestOptionsPost.body=temp;
       requestOptionsPost.headers.Authorization=`Bearer ${token}`; 
-      const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsGet);
+      const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsPost);
       const data= await response.json();
       console.log(response);
       console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     }, 
-    changePassword: async (param:any) => {JSON.stringify(param); return await fetch("", requestOptionsPost);},
+
+
+    changePassword:  async (param:any) => {
+      let temp =JSON.stringify(param);
+      // let temp=param;
+      requestOptionsPost.body=temp;
+      setToken();
+      const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsPost);
+      const data= await response.json();
+      console.log(response);
+      console.log(data);
+      if (response.ok==false) {throw new Error(data.message)};
+      return data;
+    },
+
     createBoard: async (param:any) => {JSON.stringify(param); return await fetch("", requestOptionsPost);},
-    getUserInfo: async ()=>{ setToken() ; return await fetch ("/api/users/me", requestOptionsGet);}
+    getUserInfo: async () => {
+      
+      // let temp=param;
+      setToken();
+      const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsGet);
+      const data= await response.json();
+      console.log(response);
+      console.log(data);
+      if (response.ok==false) {throw new Error(data.message)};
+      return data;
+    },
   }
   
   export default userActionAPI

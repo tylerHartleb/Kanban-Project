@@ -92,7 +92,7 @@ const CantLogin: React.FC = () => {
 
     try{
       
-      const data= await userAuthAPI.verifyAnswer({email:userEmail, password:userPass});
+      const data= await userAuthAPI.verifyAnswer({email:userEmail, answer:securityAnswer});
       const token= data.token;
       console.log("Token", token);
       const data1= await userActionAPI.changePasswordToken(token, {password:userPass});

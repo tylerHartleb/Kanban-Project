@@ -8,7 +8,6 @@ const requestOptionsPost = {
 const requestOptionsGet = {
   method: 'GET',
   headers: { 'Content-Type': 'application/json' },
-  body: "",
 };
 
 const userAuthAPI = {
@@ -40,8 +39,8 @@ const userAuthAPI = {
   requestVerification: async (param) => {
     let temp =JSON.stringify(param);
     // let temp=param;
-    requestOptionsGet.body=temp;
-    const response= await fetch("http://localhost:5000/api/users/recovery/", requestOptionsGet);
+    requestOptionsPost.body=temp;
+    const response= await fetch("http://localhost:5000/api/users/recovery", requestOptionsPost);
     const data= await response.json();
     console.log(response);
     console.log(data);
@@ -50,14 +49,16 @@ const userAuthAPI = {
     
   },
 
+  //Verify Answer
   verifyAnswer: async (param) => {
     let temp =JSON.stringify(param);
     // let temp=param;
-    requestOptionsGet.body=temp;
-    const response= await fetch("http://localhost:5000/api/users/recovery/", requestOptionsGet);
+    console.log("Sent in Body:", temp);
+    requestOptionsPost.body=temp;
+    const response= await fetch("http://localhost:5000/api/users/recovery-check/", requestOptionsPost);
     const data= await response.json();
-    console.log(response);
-    console.log(data);
+    console.log("Response is", response);
+    console.log("Data read from response", data);
     if (response.ok==false) {throw new Error(data.message)};
     return data;
   }
