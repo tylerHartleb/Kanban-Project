@@ -16,11 +16,13 @@ import {
   IonTitle,
   IonRouterLink,
   IonNote, 
-  IonBackButton
+  IonBackButton,
+  IonIcon
 } from "@ionic/react";
 import { useState } from "react";
 import userAuthAPI from "../clientAPI/userAuthAPI"
 import userActionAPI from "../clientAPI/userActionAPI";
+import {chevronBackOutline} from 'ionicons/icons'
 
 const CantLogin: React.FC = () => {
   
@@ -117,7 +119,7 @@ const CantLogin: React.FC = () => {
                   <IonCol>
                     <IonItem lines="none">
                       <IonLabel><IonText><b>Security Question:</b></IonText></IonLabel>
-                      <IonButton  onClick={()=>{setSecurityQuestion("")}}slot= "start">Return </IonButton>
+                      <IonButton  size="large" onClick={()=>{setSecurityQuestion(""); setUserEmail("");}}slot= "start" fill="clear"><IonIcon icon={chevronBackOutline}></IonIcon></IonButton>
                     </IonItem>
                   </IonCol>
         </IonRow>

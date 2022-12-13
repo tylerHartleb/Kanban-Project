@@ -11,10 +11,10 @@ const requestOptionsPost = {
   };
 
   const setToken =()=>{
-    console.log(localStorage.getItem("token"));
+    // console.log(localStorage.getItem("token"));
     // let token=JSON.parse(localStorage.getItem("token")!)
     let token = localStorage.getItem("token");
-    console.log(token);
+    // console.log(token);
     requestOptionsGet.headers['Authorization']= `Bearer ${token}` ;
     requestOptionsPost.headers['Authorization']= `Bearer ${token}`;
   }
@@ -50,11 +50,26 @@ const requestOptionsPost = {
       setToken();
       const response = await fetch('http://localhost:5000/api/boards', requestOptionsPost);
       const data = await response.json();
-      console.log(response);
-      console.log(data);
+      // console.log(response);
+      // console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
+
+    //Takes in email in parmas
+    inviteCollaborator: async (boardId:any, param:any) => {
+      let temp =JSON.stringify(param);
+      console.log("Params passed: ", temp);
+      requestOptionsPost.body=temp;
+      setToken();
+      const response = await fetch(`http://localhost:5000/api/boards/invite/${boardId}`, requestOptionsPost);
+      const data = await response.json();
+      console.log("Response:", response);
+      console.log("Data", data);
+      if (response.ok==false) {throw new Error(data.message)};
+      return data;
+    },
+
     getUserInfo: async () => {
       // let temp=param;
       setToken();
