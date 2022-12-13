@@ -25,11 +25,12 @@ import DroppableGroup from "./DroppableGroup";
 
 import { reorder } from '../scripts/movement-utils';
 import { Card, Cards, Group, IProject } from "../classes/KanbanClasses";
-import { addGroup, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
+import { addGroup, deleteTaskList, getGroups, getTasks, updateTask } from "../clientAPI/boardActionAPI";
 import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
 import { getDefaultNormalizer } from "@testing-library/react";
+import { setgroups } from "process";
 
 const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
     const [groups, updateGroups] = useState([] as Group[]);
@@ -43,12 +44,21 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
         if (actionToCall == "add") {
             setIsAdding(true);
         } else if (actionToCall == 'delete') {
-            deleteGroup();
+            deleteBoard();
         }
     }
 
-    function deleteGroup() {
+    function deleteBoard() {
         deleteSelBoard(id);
+    }
+
+    function deleteGroup(id: string) {
+        deleteTaskList(id);
+        const newGroups = groups.filter(group => {
+            return group.id != id;
+        })
+
+        updateGroups(newGroups);
     }
 
     function getGroupItems(id: String): Cards {
@@ -204,7 +214,7 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
                     <div className="board-content">
                         {groups.map((group) => {
                             return (
-                                <DroppableGroup groupData={group} key={group.id} />
+                                <DroppableGroup groupData={group} key={group.id} deleteGroup={deleteGroup} />
                             )
                         })}
                     </div>

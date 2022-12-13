@@ -10,6 +10,7 @@ export type IDraggableCard = {
 
 export type IDroppableGroup = {
     groupData: IGroupData,
+    deleteGroup: (id: string) => void
 }
 
 export type KanbanItem = {

@@ -83,6 +83,14 @@ export async function updateTaskList(id: string, params: any) {
     return data;
 }
 
+export async function deleteTaskList(id: string) {
+    setToken();
+    const response = await fetch(`http://localhost:5000/api/taskLists/${id}`, requestOptionsDelete);
+    const data= await response.json();
+    if (response.ok==false) {throw new Error(data.message)};
+    return data;
+}
+
 export async function createTask(id: string, params: any) {
     setToken();
     const postData = { ...requestOptionsPost, body: JSON.stringify(params) }

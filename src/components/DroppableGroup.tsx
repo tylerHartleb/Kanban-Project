@@ -18,7 +18,8 @@ import {
     IonToolbar,
     IonList,
     IonLabel,
-    useIonModal
+    useIonModal,
+    useIonActionSheet
 } from '@ionic/react';
 import {
     IonInputCustomEvent,
@@ -43,7 +44,7 @@ function useForceUpdate(){
     return () => setValue(value => value + 1);
 }
 
-const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
+const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) => {
     const [state, updateState] = useState(groupData);
     const [isCreating, setCreating] = useState(false);
     const [user, setUser] = useState({} as { _id: string });
@@ -55,16 +56,20 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
         setUser(data);
       }, [])
     
-      // #region Hooks
-      useEffect(() => {
-        fetchData().catch();
-      }, []);
-      // #endregion
+    // #region Hooks
+    useEffect(() => {
+    fetchData().catch();
+    }, []);
+    // #endregion
 
     function updateGroupTitle(event: IonInputCustomEvent<InputChangeEventDetail>) {
         const title : string = event.detail.value ?? "";
         state.title = title;
         updateTaskList(state.id, {title: state.title});
+    }
+
+    function deleteSelf() {
+        deleteGroup(groupData.id);
     }
 
     async function createCard(event: IonInputCustomEvent<FocusEvent>) {
@@ -135,15 +140,27 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
 
     const [present, dismiss] = useIonModal(GroupModal, {
         onDismiss: (data: string, role: string) => dismiss(data, role),
-        title: state.title
-      });
+            title: state.title
+        });
+
+    const [presentSheet] = useIonActionSheet();
+    const callAction = (detail: OverlayEventDetail) => {
+        const actionToCall = detail.data.action;
+        
+        if (actionToCall == "edit") {
+            openModal();
+        } else if (actionToCall == 'delete') {
+            deleteSelf();
+        }
+    }
 
     function openModal() {
         present({
             onWillDismiss: (ev: CustomEvent<OverlayEventDetail>) => {
-            if (ev.detail.data != "") {
-                state.title = ev.detail.data;
-            }
+                if (ev.detail.data != "") {
+                    state.title = ev.detail.data;
+                    updateTaskList(state.id, {title: state.title});
+                }
             }
         });
     }
@@ -171,7 +188,33 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData }) => {
                                             inputMode="text"
                                         />
                                     </IonItem>
-                                    <IonButton className="delete-board" fill="clear" onClick={openModal}>
+                                    <IonButton className="delete-board" fill="clear" onClick={() =>
+                                        presentSheet({
+                                            header: `${groupData.title}`,
+                                            buttons: [
+                                                {
+                                                    text: 'Delete',
+                                                    role: 'destructive',
+                                                    data: {
+                                                    action: 'delete',
+                                                    },
+                                                },
+                                                {
+                                                    text: 'Edit',
+                                                    data: {
+                                                    action: 'edit',
+                                                    },
+                                                },
+                                                {
+                                                    text: 'Cancel',
+                                                    role: 'cancel',
+                                                    data: {
+                                                    action: 'cancel',
+                                                    },
+                                                },
+                                            ],
+                                            onDidDismiss: ({ detail }) => callAction(detail),
+                                        })}>
                                         <IonIcon slot="icon-only" icon={cogOutline} size="small"></IonIcon>
                                     </IonButton>
                                 </IonCardTitle>

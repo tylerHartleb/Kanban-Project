@@ -53,7 +53,7 @@ import "./DraggableCard.scss";
 import 'katex/dist/katex.min.css'
 import { PageContext } from '../pages/MyBoards';
 import userActionAPI from '../clientAPI/userActionAPI';
-import { deleteBoard, deleteTask, updateTask } from '../clientAPI/boardActionAPI';
+import { deleteTask, updateTask } from '../clientAPI/boardActionAPI';
 
 // #region Card
 const DraggableCard: React.FC<IDraggableCard> = ({ cardData, groupName, index, groupId, deleteCard }) => {
