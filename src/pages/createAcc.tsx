@@ -19,6 +19,8 @@ import {
   IonSelect,
   IonSelectOption,
   IonList,
+  IonHeader,
+  IonToolbar,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import userAuthAPI from "../clientAPI/userAuthAPI";
@@ -92,14 +94,27 @@ const CreateAcc: React.FC = () => {
     }
   };
 
-  return (
+  return (<>
+    <IonHeader>
+        <IonToolbar>
+          <IonTitle>
+          Create Account
+          </IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Create Account</IonTitle>
+          </IonToolbar>
+        </IonHeader>
     <IonGrid>
       <br></br>
-      <IonRow class="ion-justify-content-start ion-align-items-start">
+      {/* <IonRow class="ion-justify-content-start ion-align-items-start">
         <IonCol>
           <IonTitle>Create Account</IonTitle>
         </IonCol>
-      </IonRow>
+      </IonRow> */}
       <IonRow class="ion-justify-content-center ion-align-items-center">
         <IonCol>
           <IonItem
@@ -225,6 +240,8 @@ const CreateAcc: React.FC = () => {
         </IonCol>
       </IonRow>
     </IonGrid>
+    </IonContent>
+    </>
   );
 };
 

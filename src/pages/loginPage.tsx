@@ -12,7 +12,9 @@ import {
   IonTitle,
   IonNote,
   IonIcon,
-  IonRouterLink
+  IonRouterLink,
+  IonHeader,
+  IonToolbar
 } from "@ionic/react";
 import {logoGoogle} from 'ionicons/icons'
 import React, { useEffect, useState } from "react";
@@ -74,11 +76,24 @@ const LoginPage: React.FC<any> = (props:any) => {
 
 
   return (
-    // <IonContent fullscreen className="ion-padding">
+    <>
+    <IonHeader>
+        <IonToolbar>
+          <IonTitle>
+          Login to Managerization
+          </IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Login to Managerization</IonTitle>
+          </IonToolbar>
+        </IonHeader>
           <IonGrid >
-            <br></br>
-            <IonRow class="ion-justify-content-start ion-align-items-start"><IonCol><IonTitle>Login to Managerization</IonTitle></IonCol></IonRow>
-            <hr></hr>
+            {/* <br></br> */}
+            {/* <IonRow class="ion-justify-content-start ion-align-items-start"><IonCol><IonTitle>Login to Managerization</IonTitle></IonCol></IonRow> */}
+            {/* <hr></hr> */}
               <IonRow class="ion-justify-content-center ion-align-items-center">
                   <IonCol>
                     <IonItem className={`${errMsg1==="" && 'ion-valid'} ${errMsg1!==""  && 'ion-invalid'}`}>
@@ -120,7 +135,7 @@ const LoginPage: React.FC<any> = (props:any) => {
               </IonRow>
               
           </IonGrid>
-      //  </IonContent>
+          </IonContent></>
   );
 };
 
