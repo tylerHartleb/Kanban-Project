@@ -44,11 +44,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.scss";
 
-/* Custom Types */
-import { Cards, Card, Group, Members, IProject } from "./classes/KanbanClasses";
-
 /* Custom Components */
-import ProjectBoard from "./components/ProjectBoard";
 import LoginPage from "./pages/loginPage";
 import CantLogin from "./pages/cantLogin";
 import CreateAcc from "./pages/createAcc";
@@ -82,7 +78,9 @@ const App: React.FC = () => {
             <IonTabs>
               <IonRouterOutlet>
                 <Route exact path="/MyBoards" >
-                  <IonPage><MyBoards /></IonPage>
+                  <IonPage>
+                    <MyBoards />
+                  </IonPage>
                 </Route>
                 <Route exact path="/CreateBoard">
                   <IonPage>
@@ -102,7 +100,7 @@ const App: React.FC = () => {
                 <IonTabButton
                   disabled={false}
                   tab="MyBoards"
-                  href="MyBoards"
+                  href="/MyBoards"
                   onClick={() => resetBoardPage()}
                 >
                   <IonIcon icon={clipboardOutline} />
