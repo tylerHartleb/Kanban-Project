@@ -69,53 +69,61 @@ const App: React.FC = () => {
     }
   }, []);
 
+  function resetBoardPage() {
+    const nav = document.querySelector('ion-nav');
+    nav?.popToRoot();
+  }
+
   return (
     <IonApp>
       {loggedIn ? (
-        <IonReactRouter>
-          <IonTabs>
-            <IonRouterOutlet>
-              <Route exact path="/MyBoards">
-                <IonContent><MyBoards /></IonContent>
-              </Route>
-              <Route exact path="/CreateBoard">
-                <IonContent>
-                  <CreateBoard />
-                </IonContent>
-              </Route>
-              <Route exact path="/MyAccount">
-                <IonContent>
-                  <MyAccount changeLogin={(setTo:boolean)=>{setLoggedIn(setTo)}} />
-                </IonContent>
-              </Route>
-              <Route exact path="/">
-                <Redirect to="/MyAccount" />
-              </Route>
-            </IonRouterOutlet>
-            <IonTabBar slot="bottom">
-              <IonTabButton
-                disabled={false}
-                tab="MyBoards"
-                href="MyBoards"
-              >
-                <IonIcon icon={clipboardOutline} />
-                <IonLabel>My Boards</IonLabel>
-              </IonTabButton>
-              <IonTabButton
-                disabled={false}
-                tab="CreateBoard"
-                href="/CreateBoard"
-              >
-                <IonIcon icon={addOutline} />
-                <IonLabel>Create new Board</IonLabel>
-              </IonTabButton>
-              <IonTabButton disabled={false} tab="MyAccount" href="/MyAccount">
-                <IonIcon icon={personOutline} />
-                <IonLabel>My Account</IonLabel>
-              </IonTabButton>
-            </IonTabBar>
-          </IonTabs>
-        </IonReactRouter>
+        <>
+          <IonReactRouter>
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/MyBoards" >
+                  <IonPage><MyBoards /></IonPage>
+                </Route>
+                <Route exact path="/CreateBoard">
+                  <IonPage>
+                    <CreateBoard  />
+                  </IonPage>
+                </Route>
+                <Route exact path="/MyAccount">
+                  <IonPage>
+                    <MyAccount changeLogin={(setTo:boolean)=>{setLoggedIn(setTo)}} />
+                  </IonPage>
+                </Route>
+                <Route exact path="/">
+                  <Redirect to="/MyAccount" />
+                </Route>
+              </IonRouterOutlet>
+              <IonTabBar slot="bottom">
+                <IonTabButton
+                  disabled={false}
+                  tab="MyBoards"
+                  href="MyBoards"
+                  onClick={() => resetBoardPage()}
+                >
+                  <IonIcon icon={clipboardOutline} />
+                  <IonLabel>My Boards</IonLabel>
+                </IonTabButton>
+                <IonTabButton
+                  disabled={false}
+                  tab="CreateBoard"
+                  href="/CreateBoard"
+                >
+                  <IonIcon icon={addOutline} />
+                  <IonLabel>Create new Board</IonLabel>
+                </IonTabButton>
+                <IonTabButton disabled={false} tab="MyAccount" href="/MyAccount">
+                  <IonIcon icon={personOutline} />
+                  <IonLabel>My Account</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          </IonReactRouter>
+        </>
       ) : (
         <>
           <IonReactRouter>

@@ -51,7 +51,6 @@ import { Card, ICardData } from '../classes/KanbanClasses';
 
 import "./DraggableCard.scss";
 import 'katex/dist/katex.min.css'
-import { PageContext } from '../pages/MyBoards';
 import userActionAPI from '../clientAPI/userActionAPI';
 import { deleteTask, updateTask } from '../clientAPI/boardActionAPI';
 

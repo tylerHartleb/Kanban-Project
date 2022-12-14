@@ -32,6 +32,7 @@ import userActionAPI from "../clientAPI/userActionAPI";
 import "./ProjectBoard.scss";
 import { getDefaultNormalizer } from "@testing-library/react";
 import { setgroups } from "process";
+import { useInterval } from "usehooks-ts";
 
 const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
     const [groups, updateGroups] = useState([] as Group[]);
@@ -40,7 +41,7 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
 
     const [present] = useIonActionSheet();
     const callAction = (detail: OverlayEventDetail) => {
-        const actionToCall = detail.data.action;
+        const actionToCall = detail?.data?.action ?? "";
         
         if (actionToCall == "add") {
             setIsAdding(true);
