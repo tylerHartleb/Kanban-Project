@@ -27,8 +27,6 @@ const requestOptionsPost = {
       requestOptionsPost.headers.Authorization=`Bearer ${token}`; 
       const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsPost);
       const data= await response.json();
-      console.log(response);
-      console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     }, 
@@ -39,8 +37,6 @@ const requestOptionsPost = {
       setToken();
       const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsPost);
       const data= await response.json();
-      console.log(response);
-      console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
@@ -50,8 +46,6 @@ const requestOptionsPost = {
       setToken();
       const response = await fetch('http://localhost:5000/api/boards', requestOptionsPost);
       const data = await response.json();
-      // console.log(response);
-      // console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
@@ -64,8 +58,6 @@ const requestOptionsPost = {
       setToken();
       const response = await fetch(`http://localhost:5000/api/boards/invite/${boardId}`, requestOptionsPost);
       const data = await response.json();
-      console.log("Response:", response);
-      console.log("Data", data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },
@@ -75,8 +67,6 @@ const requestOptionsPost = {
       setToken();
       const response= await fetch("http://localhost:5000/api/users/me/", requestOptionsGet);
       const data= await response.json();
-      console.log(response);
-      console.log(data);
       if (response.ok==false) {throw new Error(data.message)};
       return data;
     },

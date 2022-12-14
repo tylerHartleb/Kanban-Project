@@ -30,8 +30,6 @@ import { addGroup, deleteTaskList, getGroups, getTasks, updateTask, inviteToBoar
 import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
-import { getDefaultNormalizer } from "@testing-library/react";
-import { setgroups } from "process";
 
 const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
     const [groups, updateGroups] = useState([] as Group[]);
@@ -161,44 +159,33 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
         const groupTitle = textarea?.value ?? "";
         
         const response = await addGroup(id , {  groupTitle: groupTitle});
-        console.log(response);
+        setIsAdding(false);
 
         await fetchData();
-        
-        setIsAdding(false);
     }
 
     const fetchData = useCallback(async () => {
         const data = await getGroups(id);
         const userData = await userActionAPI.getUserInfo();
     
-        const groups: Group[] = data.map((group: { _id: string; title: string; }) => {
+        const newGroups: Group[] = data.map((group: { _id: string; title: string; }) => {
           return new Group(group._id, group.title);
         });
 
-        Promise.all(
-            groups.map(async (group) => {
-                const taskData = await getTasks(group.id);
-                taskData.sort((a:any,b:any) => a.position - b.position);
+        if (JSON.stringify(groups) != JSON.stringify(newGroups)) {
+            updateGroups(newGroups)
+        }
 
-                const tasks = taskData.map((task: { title: string, description: string, _id: string, creator: string }) => {
-                    return new Card(task._id, task.title, task.creator, task.description)
-                })
-
-                group.cards = tasks;
-                return group;
-            })
-        ).then(() => {
+        if (JSON.stringify(user) != JSON.stringify(userData)) {
             setUser(userData)
-            updateGroups(groups)
-        })
+        }
       }, [])
     
-      // #region Hooks
-      useEffect(() => {
+    // #region Hooks
+    useEffect(() => {
         fetchData().catch();
-      }, []);
-      // #endregion
+    }, []);
+    // #endregion
 
     return (
         <>
