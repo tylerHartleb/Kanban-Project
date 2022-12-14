@@ -23,8 +23,9 @@ import { useState } from "react";
 import userAuthAPI from "../clientAPI/userAuthAPI"
 import userActionAPI from "../clientAPI/userActionAPI";
 import {chevronBackOutline} from 'ionicons/icons'
+import { useHistory } from "react-router";
 
-const CantLogin: React.FC = () => {
+const CantLogin: React.FC<any> = (props) => {
   
   const [userEmail, setUserEmail]=useState("");
   const [errMsg1, setErrMsg1] = useState(""); //For the password field 
@@ -38,6 +39,7 @@ const CantLogin: React.FC = () => {
   const [userPass, setUserPass]=useState("");
   const [confirmPass, setConfirmPass] =useState("");
   const [sucessMsg, setSuccessMsg]= useState("");
+  const history = useHistory();
 
 
   //Request a verification question from the server
@@ -98,8 +100,11 @@ const CantLogin: React.FC = () => {
       const token= data.token;
       console.log("Token", token);
       const data1= await userActionAPI.changePasswordToken(token, {password:userPass});
+      localStorage.setItem("token", token); 
       setCodeSent(true);
       setSuccessMsg("Changed password!");
+      props.changeLogin(true);
+      history.push("/");
 
     }
 

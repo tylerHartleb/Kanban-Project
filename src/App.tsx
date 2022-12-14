@@ -138,7 +138,7 @@ const App: React.FC = () => {
                 </Route>
                 <Route exact path="/CantLogin">
                   <IonContent>
-                    <CantLogin />
+                    <CantLogin changeLogin={(setTo:boolean)=>{setLoggedIn(setTo)}}/>
                   </IonContent>
                 </Route>
                 <Route exact path="/">
