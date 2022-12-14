@@ -36,7 +36,7 @@ import userActionAPI from "../clientAPI/userActionAPI";
 import "./DroppableGroup.scss";
 import { Card } from "../classes/Card";
 
-import { createTask, updateTaskList, getTasks } from "../clientAPI/boardActionAPI";
+import { createTask, updateTaskList } from "../clientAPI/boardActionAPI";
 
 //create your forceUpdate hook
 function useForceUpdate(){
@@ -46,20 +46,15 @@ function useForceUpdate(){
 
 const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) => {
     const [state, updateState] = useState(groupData);
-    const [cards, updateCards] = useState(groupData.cards)
     const [isCreating, setCreating] = useState(false);
+    const [user, setUser] = useState({} as { _id: string });
     const forceUpdate = useForceUpdate();
 
     const fetchData = useCallback(async () => {
-        const data =  await getTasks(groupData.id)
-        data.sort((a:any,b:any) => a.position - b.position);
+        const data = await userActionAPI.getUserInfo();
 
-        const tasks = data.map((task: { title: string, description: string, _id: string, creator: string }) => {
-            return new Card(task._id, task.title, task.creator, task.description)
-        })
-
-        updateCards(tasks);
-    }, [])
+        setUser(data);
+      }, [])
     
     // #region Hooks
     useEffect(() => {
@@ -86,14 +81,22 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) =
         const title = event.target.value as string
         
         if (title) {
-            const response = await createTask(state.id, { title: title });
-            await fetchData();
+            const templateCard = new Card(Math.random().toString(), title, user._id);
+            groupData.cards.push(templateCard);
+            createTask(state.id, { title: title });
+            
         }     
         setCreating(false);
     }
 
     async function deleteCard(id: string) {
-        await fetchData();
+        const newCards = state.cards.filter(card => {
+            return card.id != id;
+        })
+
+        state.cards = newCards;
+
+        forceUpdate();
     }
 
     function renderCreateCard() {
@@ -138,7 +141,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) =
     const [present, dismiss] = useIonModal(GroupModal, {
         onDismiss: (data: string, role: string) => dismiss(data, role),
             title: state.title
-    });
+        });
 
     const [presentSheet] = useIonActionSheet();
     const callAction = (detail: OverlayEventDetail) => {
@@ -218,7 +221,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) =
                             </IonCardHeader>
                             <IonCardContent>
                                 <div className="droppable-group__content">
-                                    {(cards.map((card, index) => {
+                                    {(state.cards.map((card, index) => {
                                         return(
                                             <DraggableCard cardData={card} groupName={state.title} index={index} key={card.id} groupId={state.id} deleteCard={deleteCard} />
                                         )
