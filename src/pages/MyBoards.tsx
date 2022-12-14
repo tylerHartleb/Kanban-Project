@@ -57,9 +57,9 @@ export const PageContext = createContext(null as HTMLElement | null);
 const MyBoards: React.FC = () => {
 
   return (
-    <IonContent>
+    <>
       <IonNav root={() => <MyBoardsPage />} />
-    </IonContent> 
+    </>
   );
 };
 
