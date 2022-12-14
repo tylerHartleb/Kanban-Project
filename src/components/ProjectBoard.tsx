@@ -30,6 +30,7 @@ import { addGroup, deleteTaskList, getGroups, getTasks, updateTask, inviteToBoar
 import userActionAPI from "../clientAPI/userActionAPI";
 
 import "./ProjectBoard.scss";
+import useInterval from "../customHook/useInterval";
 
 const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) => {
     const [groups, updateGroups] = useState([] as Group[]);
@@ -48,6 +49,24 @@ const ProjectBoard: React.FC<IProject> = ({ id, title, owner, deleteSelBoard }) 
             inviteMember();
         }
     }
+
+    const [count, setCount] = useState<number>(0)
+  // Dynamic delay
+  const [delay, setDelay] = useState<number>(10000)
+  // ON/OFF
+  const [isPlaying, setPlaying] = useState<boolean>(true);
+
+  //https://usehooks-ts.com/react-hook/use-interval
+  useInterval(
+    () => {
+      // Your custom logic here
+      setCount(count + 1)
+      console.log(count);
+      fetchData();
+    },
+    // Delay in milliseconds or null to stop it
+    isPlaying ? delay : null,
+  )
 
     const [presentAlert] = useIonAlert()
 

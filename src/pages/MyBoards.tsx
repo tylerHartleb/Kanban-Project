@@ -32,7 +32,7 @@ import {
 } from "@ionic/react";
 import { RefresherEventDetail } from "@ionic/core"
 import { trashOutline } from 'ionicons/icons';
-import { useEffect, useState, useRef, createContext, useCallback } from "react";
+import { useEffect, useState, useRef, createContext, useCallback, ChangeEvent } from "react";
 
 // #region Classes & Types
 import { KanbanData, KanbanGroup } from "../types/KanbanTypes";
@@ -40,6 +40,8 @@ import { KanbanData, KanbanGroup } from "../types/KanbanTypes";
 import { Cards, Card, Group, Members, IProject } from "../classes/KanbanClasses";
 import { Project } from "../classes/Project";
 // #endregion
+
+import useInterval from "../customHook/useInterval";
 
 // #region SCSS
 import "./MyBoards.scss";
@@ -66,6 +68,27 @@ const MyBoardsPage: React.FC = () => {
   const [boards, setBoards] = useState([] as Project[]);
   const [results, setResults] = useState([] as Project[]);
   const [user, setUser] = useState({} as any);
+
+
+  const [count, setCount] = useState<number>(0)
+  // Dynamic delay
+  const [delay, setDelay] = useState<number>(10000)
+  // ON/OFF
+  const [isPlaying, setPlaying] = useState<boolean>(true);
+
+  //https://usehooks-ts.com/react-hook/use-interval
+  useInterval(
+    () => {
+      // Your custom logic here
+      setCount(count + 1)
+      console.log(count);
+      fetchData();
+    },
+    // Delay in milliseconds or null to stop it
+    isPlaying ? delay : null,
+  )
+
+
 
   // #region Handlers
   const handleSearch = (ev: Event) => {
@@ -112,7 +135,7 @@ const MyBoardsPage: React.FC = () => {
   // #endregion
 
   return (
-    <>
+    <> {count}
       <IonHeader translucent={true}>
         <IonToolbar>
           <IonTitle>Your Boards</IonTitle>
