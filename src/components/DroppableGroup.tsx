@@ -145,7 +145,7 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) =
 
     const [presentSheet] = useIonActionSheet();
     const callAction = (detail: OverlayEventDetail) => {
-        const actionToCall = detail.data.action;
+        const actionToCall = detail?.data?.action ?? "";
         
         if (actionToCall == "edit") {
             openModal();
@@ -196,20 +196,20 @@ const DroppableGroup: React.FC<IDroppableGroup> = ({ groupData, deleteGroup }) =
                                                     text: 'Delete',
                                                     role: 'destructive',
                                                     data: {
-                                                    action: 'delete',
+                                                        action: 'delete',
                                                     },
                                                 },
                                                 {
                                                     text: 'Edit',
                                                     data: {
-                                                    action: 'edit',
+                                                        action: 'edit',
                                                     },
                                                 },
                                                 {
                                                     text: 'Cancel',
                                                     role: 'cancel',
                                                     data: {
-                                                    action: 'cancel',
+                                                        action: 'cancel',
                                                     },
                                                 },
                                             ],
