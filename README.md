@@ -1,4 +1,4 @@
-# SENG 513 Project
+# Kanban Project
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -76,8 +76,6 @@ To build the app run the following commands:
 ```bash
   # Build the app
   $ npm run build
-
-  # TODO: Add the commands for ios / android apps
 ```
 
 To run the unit tests run the following commands:
